@@ -88,7 +88,7 @@ function validateTerms() {
             btnCreate.disabled = false;
             // Aqui você pode adicionar o evento de clique para redirecionar ou abrir o form de registro
             btnCreate.onclick = () => {
-                    window.location.href = 'cadastro.html';
+                    window.location.href = 'Frontend/html/cadastro.html';
                     closeTermsModal();
                 };
         } else {

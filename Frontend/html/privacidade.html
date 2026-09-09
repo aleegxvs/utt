@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Termos de Uso - UTOME</title>
+    <title>Política de Privacidade - UTOME</title>
 
     <!-- Meta tags SEO -->
     <meta name="description"
-        content="Termos de Uso do dispositivo UTOME Gen 1 e da plataforma de acompanhamento de rotinas.">
+        content="Política de Privacidade do dispositivo UTOME Gen 1 e da plataforma de acompanhamento de rotinas.">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="icon" type="image/png" href="../assets/favicon.png">
 
     <style>
         .legal-header {
@@ -97,14 +97,14 @@
     <header class="navbar">
         <div class="container nav-container">
             <div class="logo">
-                <a href="index.html">
-                    <img src="assets/logo.png" alt="UTOME Logo"
+                <a href="../../index.html">
+                    <img src="../assets/logo.png" alt="UTOME Logo"
                         onerror="this.src='https://img.icons8.com/color/48/robot-2.png'">
                 </a>
             </div>
             <nav class="nav-links">
                 <ul>
-                    <li><a href="index.html" class="btn btn-login">Voltar ao Início</a></li>
+                    <li><a href="../../index.html" class="btn btn-login">Voltar ao Início</a></li>
                 </ul>
             </nav>
         </div>
@@ -113,7 +113,7 @@
     <main>
         <section class="legal-header">
             <div class="container">
-                <h1>Termos de Uso</h1>
+                <h1>Política de Privacidade</h1>
                 <p>Última atualização: Setembro de 2026</p>
             </div>
         </section>
@@ -121,50 +121,44 @@
         <section class="legal-content">
             <div class="container">
                 <div class="legal-card">
-                    <p>Bem-vindo ao <strong>UTOME Gen 1</strong>. Estes Termos de Uso estabelecem as condições para
-                        utilização do dispositivo UTOME, da plataforma digital e dos serviços relacionados ao projeto.
+                    <p>A proteção da privacidade e dos dados dos nossos usuários é um pilar central do <strong>Projeto
+                            UTOME</strong>, especialmente por lidarmos com tecnologia assistiva para crianças com
+                        Transtorno do Espectro Autista (TEA).</p>
+
+                    <h2>1. O Nosso Compromisso com a Privacidade</h2>
+                    <p>O UTOME foi projetado com foco no <strong>baixo estímulo e na previsibilidade</strong>. Esse
+                        princípio se estende à captação de dados:</p>
+                    <ul>
+                        <li><strong>Não</strong> possui microfones para gravação de voz contínua.</li>
+                        <li><strong>Não</strong> possui câmeras ou sensores de imagem.</li>
+                        <li><strong>Não</strong> rastreamos a localização GPS do dispositivo.</li>
+                        <li>Suas funções básicas operam <strong>offline</strong>.</li>
+                    </ul>
+
+                    <h2>2. Dados Coletados</h2>
+                    <p>Coletamos apenas os dados necessários para o funcionamento do sistema:</p>
+                    <ul>
+                        <li><strong>Dados do Responsável (Plataforma Web):</strong> Nome, e-mail e dados de autenticação
+                            (Firebase Auth).</li>
+                        <li><strong>Dados do Dispositivo (UTOME):</strong> Bateria, conectividade, ID do Dispositivo
+                            (<code>device_id</code>) e o histórico de rotinas (quando a criança confirmou uma tarefa no
+                            sensor TTP223).</li>
+                    </ul>
+
+                    <h2>3. Uso e Armazenamento dos Dados</h2>
+                    <p>Os dados são armazenados de forma segura na infraestrutura do <strong>Google Firebase</strong>,
+                        sendo encriptados em trânsito (HTTPS) e em repouso. Eles são utilizados exclusivamente para
+                        permitir que o Responsável acompanhe as rotinas no painel.</p>
+
+                    <h2>4. Compartilhamento de Dados</h2>
+                    <p>Nós <strong>não vendemos, alugamos ou compartilhamos</strong> os dados pessoais dos responsáveis
+                        ou os dados de rotina das crianças com terceiros, anunciantes ou empresas de marketing.</p>
+
+                    <h2>5. Proteção à Privacidade Infantil (LGPD/COPPA)</h2>
+                    <p>O UTOME não se comunica diretamente com a criança via internet aberta, nem solicita dados da
+                        criança. A criação da conta, a definição das tarefas e o monitoramento são feitos
+                        <strong>exclusivamente pelo Responsável Legal</strong>.
                     </p>
-                    <p>Ao criar uma conta, acessar a plataforma, vincular um dispositivo ou utilizar o UTOME, você
-                        declara que leu, compreendeu e concorda com estes Termos de Uso. Caso não concorde, não utilize
-                        a plataforma ou o dispositivo.</p>
-
-                    <h2>1. Sobre o UTOME</h2>
-                    <p>O UTOME é uma solução de tecnologia assistiva desenvolvida para oferecer uma interação simples,
-                        previsível e de baixo estímulo, podendo auxiliar no acompanhamento de pequenas rotinas e
-                        atividades do dia a dia.</p>
-                    <ul>
-                        <li>Interações por toque;</li>
-                        <li>Feedback visual;</li>
-                        <li>Exibição de mensagens e estados;</li>
-                        <li>Apoio a pequenas rotinas.</li>
-                    </ul>
-
-                    <h2>2. Natureza do Dispositivo (Aviso Importante)</h2>
-                    <p>O UTOME é uma <strong>ferramenta de apoio e tecnologia assistiva</strong>.</p>
-                    <ul>
-                        <li><strong>Não é um dispositivo médico.</strong></li>
-                        <li><strong>Não realiza diagnóstico médico ou psicológico.</strong></li>
-                        <li><strong>Não substitui médicos, psicólogos ou terapeutas.</strong></li>
-                        <li><strong>Não substitui a supervisão de pais, responsáveis ou cuidadores.</strong></li>
-                    </ul>
-
-                    <h2>3. Cadastro e Conta do Responsável</h2>
-                    <p>A conta da plataforma deve ser criada por uma pessoa maior de 18 anos. O responsável legal é a
-                        única pessoa autorizada a configurar e enviar tarefas para o dispositivo.</p>
-
-                    <h2>4. Uso do Dispositivo e Restrições</h2>
-                    <p>É expressamente proibido tentar realizar engenharia reversa no firmware do ESP32-C3 ou nos
-                        circuitos eletrônicos, interceptar requisições da UTOME API ou usar a plataforma para prejudicar
-                        o bem-estar da criança.</p>
-
-                    <h2>5. Conectividade e Modo Offline</h2>
-                    <p>O UTOME requer uma conexão Wi-Fi 2.4GHz para receber novas rotinas. No <strong>Modo
-                            Offline</strong>, ele continuará funcionando no "Modo Companhia" e reagindo ao toque com os
-                        estados gravados em memória, mas novas rotinas não serão atualizadas até a reconexão.</p>
-
-                    <h2>6. Limitação de Responsabilidade</h2>
-                    <p>O UTOME Gen 1 é um projeto em desenvolvimento. Não garantimos que a plataforma estará 100% livre
-                        de falhas ou inatividade. O dispositivo é fornecido "no estado em que se encontra".</p>
                 </div>
             </div>
         </section>
@@ -174,7 +168,7 @@
     <footer class="footer">
         <div class="container footer-container">
             <div class="footer-brand">
-                <img src="assets/logo.png" alt="UTOME Logo" class="footer-logo"
+                <img src="../assets/logo.png" alt="UTOME Logo" class="footer-logo"
                     onerror="this.src='https://img.icons8.com/color/64/robot-2.png'">
                 <p>Tecnologia que acolhe.</p>
             </div>

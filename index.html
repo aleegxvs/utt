@@ -11,10 +11,10 @@
         content="UTOME é um companheiro robótico desenvolvido para oferecer interações previsíveis, conforto e apoio em rotinas para crianças com TEA.">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="icon" type="image/png" href="Frontend/assets/favicon.png">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="Frontend/css/styles.css">
 
     <!-- Fonte Nunito (visual lúdico e arredondado) -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
     <header class="navbar">
         <div class="container nav-container">
             <div class="logo">
-                <img src="assets/logo.png" alt="UTOME Logo" id="main-logo"
+                <img src="Frontend/assets/logo.png" alt="UTOME Logo" id="main-logo"
                     onerror="this.src='https://img.icons8.com/color/48/robot-2.png'">
             </div>
             <nav class="nav-links">
@@ -34,7 +34,7 @@
                     <li><a href="#como-funciona">Como Funciona</a></li>
                     <li><a href="#funcionalidades">Funcionalidades</a></li>
                     <li><a href="#prototipo">Protótipo</a></li>
-                    <li><a href="login.html" class="btn btn-login">Entrar</a></li>
+                    <li><a href="Frontend/html/login.html" class="btn btn-login">Entrar</a></li>
                 </ul>
             </nav>
         </div>
@@ -55,7 +55,7 @@
                     </div>
                 </div>
                 <div class="hero-image">
-                    <img src="assets/adesivos/adesivo-2.png" alt="Ilustração do Robô UTOME" class="floating-robot">
+                    <img src="Frontend/assets/adesivos/adesivo-2.png" alt="Ilustração do Robô UTOME" class="floating-robot">
                 </div>
             </div>
         </section>
@@ -106,7 +106,7 @@
         <section class="section-solucao" id="solucao">
             <div class="container solucao-container">
                 <div class="solucao-image">
-                    <img src="assets/adesivos/adesivo-1.png" alt="UTOME - Nossa Solução" class="solucao-img">
+                    <img src="Frontend/assets/adesivos/adesivo-1.png" alt="UTOME - Nossa Solução" class="solucao-img">
                 </div>
                 <div class="solucao-content">
                     <span class="badge">Nossa Solução</span>
@@ -386,7 +386,7 @@
                         <p>O UTOME funciona sem internet para as funções básicas, previsível em qualquer lugar.</p>
                     </div>
                     <div class="feature-card feature-card--sticker">
-                        <img src="assets/adesivos/adesivo-3.png" alt="Modo Calmante" class="card-sticker">
+                        <img src="Frontend/assets/adesivos/adesivo-3.png" alt="Modo Calmante" class="card-sticker">
                         <h4>Modo Calmante</h4>
                         <p>Reduz estímulos, usa animações suaves e linguagem curta para momentos de tensão.</p>
                     </div>
@@ -492,13 +492,13 @@
         <section class="section-cta" id="painel">
             <div class="container">
                 <div class="cta-card">
-                    <img src="assets/adesivos/adesivo-4.png" alt="UTOME" class="cta-icon card-sticker">
+                    <img src="Frontend/assets/adesivos/adesivo-4.png" alt="UTOME" class="cta-icon card-sticker">
                     <h2>Pronto para conectar seu UTOME?</h2>
                     <p>Cadastre-se e vincule seu dispositivo à plataforma do responsável para acompanhar rotinas e
                         receber atualizações em tempo real.</p>
                     <div class="cta-buttons">
                         <a href="#" class="btn btn-primary" onclick="openTermsModal(event)">Criar conta</a>
-                        <a href="login.html" class="btn btn-secondary">Já tenho conta</a>
+                        <a href="Frontend/html/login.html" class="btn btn-secondary">Já tenho conta</a>
                     </div>
                 </div>
             </div>
@@ -517,13 +517,13 @@
                     <label class="checkbox-container">
                         <input type="checkbox" id="check-terms" onchange="validateTerms()">
                         <span class="checkmark"></span>
-                        <span class="checkbox-text">Eu li e concordo com os <a href="termos.html">Termos de Uso</a>. Entendo que o UTOME é uma ferramenta de apoio e não substitui tratamento médico ou supervisão parental.</span>
+                        <span class="checkbox-text">Eu li e concordo com os <a href="Frontend/html/termos.html">Termos de Uso</a>. Entendo que o UTOME é uma ferramenta de apoio e não substitui tratamento médico ou supervisão parental.</span>
                     </label>
                     
                     <label class="checkbox-container">
                         <input type="checkbox" id="check-privacy" onchange="validateTerms()">
                         <span class="checkmark"></span>
-                        <span class="checkbox-text">Eu li e concordo com a <a href="privacidade.html">Política de Privacidade</a>. Autorizo o processamento de dados necessários para o acompanhamento das rotinas.</span>
+                        <span class="checkbox-text">Eu li e concordo com a <a href="Frontend/html/privacidade.html">Política de Privacidade</a>. Autorizo o processamento de dados necessários para o acompanhamento das rotinas.</span>
                     </label>
                 </div>
                 <div class="modal-footer">
@@ -537,7 +537,7 @@
     <footer class="footer">
         <div class="container footer-container">
             <div class="footer-brand">
-                <img src="assets/logo.png" alt="UTOME Logo" class="footer-logo"
+                <img src="Frontend/assets/logo.png" alt="UTOME Logo" class="footer-logo"
                     onerror="this.src='https://img.icons8.com/color/64/robot-2.png'">
                 <p>Tecnologia que acolhe.</p>
             </div>
@@ -548,8 +548,8 @@
                 <a href="#prototipo">Protótipo</a>
             </div>
             <div class="footer-links">
-                <a href="termos.html">Termos de Uso</a>
-                <a href="privacidade.html">Política de Privacidade</a>
+                <a href="Frontend/html/termos.html">Termos de Uso</a>
+                <a href="Frontend/html/privacidade.html">Política de Privacidade</a>
             </div>
             <div class="footer-copy">
                 <p>&copy; 2026 UTOME Gen 1. Todos os direitos reservados.</p>
@@ -558,7 +558,7 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="js/main.js"></script>
+    <script src="Frontend/js/main.js"></script>
 </body>
 
 </html>
