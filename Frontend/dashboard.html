@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | UTOME</title>
+    <meta name="description" content="Painel do Responsável UTOME — gerencie rotinas, perfis e o dispositivo do seu filho.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary:       #F57C00;
+            --primary-dark:  #D06900;
+            --primary-light: #FFF3E0;
+            --secondary:     #E6CDAA;
+            --dark:          #4A1F14;
+            --dark-shadow:   #361509;
+            --text:          #4A1F14;
+            --text-light:    #8B6B63;
+            --border:        #EAEAEA;
+            --border-shadow: #DEDEDE;
+            --bg:            #FFFDF9;
+            --white:         #FFFFFF;
+            --green:         #58CC02;
+            --green-dark:    #3E9400;
+            --font:          'Nunito', system-ui, sans-serif;
+            --sidebar-width: 260px;
+            --radius-xl:     24px;
+            --radius-lg:     18px;
+            --radius-md:     14px;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* =============================================
+           SIDEBAR
+        ============================================= */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--dark);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 28px 24px 20px;
+            border-bottom: 1.5px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-logo img {
+            height: 44px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.35);
+            padding: 12px 12px 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            text-decoration: none;
+            color: rgba(255,255,255,0.65);
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.07);
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 0 var(--primary-dark);
+        }
+
+        .nav-item img { flex-shrink: 0; opacity: 0.85; filter: brightness(0) invert(1); }
+        .nav-item.active img { opacity: 1; }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1.5px solid rgba(255,255,255,0.08);
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .user-pill:hover { background: rgba(255,255,255,0.07); }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1rem;
+            color: #fff;
+            flex-shrink: 0;
+            border: 2px solid var(--primary-dark);
+        }
+
+        .user-info { flex: 1; overflow: hidden; }
+        .user-name { font-size: 0.85rem; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-role { font-size: 0.75rem; color: rgba(255,255,255,0.4); font-weight: 600; }
+
+        /* =============================================
+           MAIN CONTENT
+        ============================================= */
+        .main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background: var(--white);
+            border-bottom: 2px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title h1 {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--text);
+        }
+
+        .topbar-title p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .topbar-actions { display: flex; align-items: center; gap: 12px; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-family: var(--font);
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-decoration: none;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .btn:active { transform: translateY(3px); box-shadow: none !important; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 0 var(--primary-dark);
+        }
+
+        .btn-primary:hover { background: #E56F00; }
+
+        .btn-ghost {
+            background: var(--white);
+            color: var(--text);
+            border-color: var(--border);
+            box-shadow: 0 4px 0 var(--border-shadow);
+        }
+
+        .btn-ghost:hover { background: var(--bg); }
+
+        .btn-danger {
+            background: #EF5350;
+            color: #fff;
+            border-color: #C62828;
+            box-shadow: 0 4px 0 #C62828;
+        }
+
+        .page-content {
+            padding: 32px;
+            flex: 1;
+        }
+
+        /* =============================================
+           CARDS / GRID UTILITÁRIOS
+        ============================================= */
+        .card {
+            background: var(--white);
+            border: 2.5px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            box-shadow: 0 6px 0 var(--border-shadow);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 900;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+        /* Stat cards */
+        .stat-card {
+            background: var(--white);
+            border: 2.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            box-shadow: 0 5px 0 var(--border-shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .stat-icon--orange { background: #FFF3E0; border: 2px solid #FFD9A8; }
+        .stat-icon--green  { background: #E8F5E9; border: 2px solid #A5D6A7; }
+        .stat-icon--brown  { background: #EFEBE9; border: 2px solid #D7CCC8; }
+
+        .stat-info { flex: 1; }
+        .stat-value { font-size: 1.6rem; font-weight: 900; color: var(--text); line-height: 1; }
+        .stat-label { font-size: 0.8rem; font-weight: 700; color: var(--text-light); margin-top: 2px; }
+
+        /* Device status badge */
+        .badge-online  { background: #E8F5E9; color: #2E7D32; border: 1.5px solid #A5D6A7; }
+        .badge-offline { background: #FFEBEE; color: #C62828; border: 1.5px solid #FFCDD2; }
+        .badge-mode    { background: var(--primary-light); color: var(--primary-dark); border: 1.5px solid #FFD9A8; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+
+        .badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        .badge-dot--green  { background: #4CAF50; }
+        .badge-dot--red    { background: #EF5350; }
+        .badge-dot--orange { background: var(--primary); }
+
+        /* =============================================
+           PÁGINA: ROTINAS
+        ============================================= */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .page-header h2 { font-size: 1.5rem; font-weight: 900; }
+        .page-header p  { font-size: 0.9rem; color: var(--text-light); font-weight: 600; margin-top: 2px; }
+
+        /* Rotinas list */
+        .routine-list { display: flex; flex-direction: column; gap: 16px; }
+
+        .routine-card {
+            background: var(--white);
+            border: 2.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 5px 0 var(--border-shadow);
+            overflow: hidden;
+        }
+
+        .routine-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .routine-header:hover { background: var(--bg); }
+
+        .routine-header-left { display: flex; align-items: center; gap: 14px; }
+
+        .routine-icon-wrap {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-light);
+            border: 2px solid #FFD9A8;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .routine-name { font-size: 1rem; font-weight: 900; }
+        .routine-meta { font-size: 0.8rem; color: var(--text-light); font-weight: 700; }
+
+        .routine-chevron {
+            transition: transform 0.3s;
+            color: var(--text-light);
+        }
+
+        .routine-card.open .routine-chevron { transform: rotate(180deg); }
+
+        .routine-tasks {
+            display: none;
+            padding: 0 24px 20px;
+            border-top: 1.5px solid var(--border);
+        }
+
+        .routine-card.open .routine-tasks { display: block; }
+
+        .task-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            transition: border-color 0.2s;
+        }
+
+        .task-item:hover { border-color: var(--primary); }
+
+        .task-drag {
+            color: var(--text-light);
+            cursor: grab;
+            opacity: 0.5;
+        }
+
+        .task-name { flex: 1; font-size: 0.9rem; font-weight: 800; }
+        .task-time { font-size: 0.8rem; color: var(--text-light); font-weight: 700; }
+
+        .task-actions { display: flex; gap: 6px; }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            box-shadow: 0 2px 0 var(--border-shadow);
+        }
+
+        .btn-icon:hover { border-color: #EF5350; background: #FFEBEE; }
+        .btn-icon--send:hover { border-color: var(--green); background: #E8F5E9; }
+
+        .add-task-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            background: none;
+            cursor: pointer;
+            font-family: var(--font);
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .add-task-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+        /* =============================================
+           MODAL
+        ============================================= */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(74, 31, 20, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s;
+        }
+
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal {
+            background: var(--white);
+            border: 3px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            width: 90%;
+            max-width: 460px;
+            box-shadow: 0 10px 0 var(--border-shadow);
+            transform: translateY(16px);
+            transition: transform 0.25s;
+        }
+
+        .modal-overlay.active .modal { transform: translateY(0); }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h3 { font-size: 1.3rem; font-weight: 900; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--text-light);
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover { color: var(--text); }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-family: var(--font);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text);
+            background: var(--bg);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.1);
+            background: #fff;
+        }
+
+        .form-control::placeholder { color: #C5BAB5; }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-actions .btn { flex: 1; justify-content: center; }
+
+        /* =============================================
+           PÁGINA: PERFIL
+        ============================================= */
+        .profile-avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .profile-avatar {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            flex-shrink: 0;
+            border: 4px solid var(--primary-dark);
+            box-shadow: 0 6px 0 var(--primary-dark);
+        }
+
+        .profile-avatar-info h3 { font-size: 1.3rem; font-weight: 900; }
+        .profile-avatar-info p  { font-size: 0.9rem; color: var(--text-light); font-weight: 600; }
+
+        /* =============================================
+           PÁGINA: DISPOSITIVO
+        ============================================= */
+        .device-status-card {
+            background: var(--dark);
+            border: 3px solid var(--dark-shadow);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            box-shadow: 0 8px 0 var(--dark-shadow);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 24px;
+            color: #fff;
+        }
+
+        .device-oled {
+            width: 100px;
+            height: 80px;
+            background: #0A0A0A;
+            border: 3px solid #333;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .device-eyes {
+            display: flex;
+            gap: 10px;
+        }
+
+        .device-eye {
+            width: 14px;
+            height: 14px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: blink 4s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 90%, 100% { transform: scaleY(1); }
+            95%            { transform: scaleY(0.1); }
+        }
+
+        .device-mouth {
+            width: 28px;
+            height: 12px;
+            border: 2.5px solid var(--primary);
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+        }
+
+        .device-info { flex: 1; }
+        .device-name { font-size: 1.2rem; font-weight: 900; margin-bottom: 6px; }
+        .device-meta { font-size: 0.85rem; color: rgba(255,255,255,0.6); font-weight: 600; }
+
+        /* Toggle switch */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .toggle-row:last-child { border-bottom: none; }
+
+        .toggle-label { font-size: 0.95rem; font-weight: 800; }
+        .toggle-desc  { font-size: 0.8rem; color: var(--text-light); font-weight: 600; margin-top: 2px; }
+
+        .toggle {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+
+        .toggle input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            border: 2px solid var(--border-shadow);
+        }
+
+        .toggle-slider:before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 2px;
+            top: 2px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle input:checked + .toggle-slider { background: var(--primary); border-color: var(--primary-dark); }
+        .toggle input:checked + .toggle-slider:before { transform: translateX(22px); }
+
+        /* =============================================
+           RESPONSIVE
+        ============================================= */
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="assets/logo.png" alt="UTOME Logo" onerror="this.src='https://img.icons8.com/color/48/robot-2.png'">
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <span class="nav-label">Menu</span>
+
+            <button class="nav-item active" onclick="showPage('rotinas', this)" id="nav-rotinas">
+                <img src="https://img.icons8.com/fluency/22/calendar.png" alt="">
+                Rotinas
+            </button>
+
+            <button class="nav-item" onclick="showPage('perfil', this)" id="nav-perfil">
+                <img src="https://img.icons8.com/fluency/22/user.png" alt="">
+                Perfil
+            </button>
+
+            <button class="nav-item" onclick="showPage('dispositivo', this)" id="nav-dispositivo">
+                <img src="https://img.icons8.com/fluency/22/robot-2.png" alt="">
+                Dispositivo
+            </button>
+
+            <span class="nav-label" style="margin-top: 16px;">Conta</span>
+
+            <a href="index.html" class="nav-item">
+                <img src="https://img.icons8.com/fluency/22/exit.png" alt="">
+                Sair
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-pill">
+                <div class="user-avatar" id="sidebar-avatar">M</div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-name">Maria Silva</div>
+                    <div class="user-role">Responsável</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-title">
+                <h1 id="topbar-title">Rotinas</h1>
+                <p id="topbar-subtitle">Crie e gerencie as rotinas do seu filho</p>
+            </div>
+            <div class="topbar-actions">
+                <span class="badge badge-online">
+                    <span class="badge-dot badge-dot--green"></span>
+                    UTOME Conectado
+                </span>
+                <button class="btn btn-primary" onclick="openModal('modal-rotina')">
+                    <img src="https://img.icons8.com/fluency/18/plus.png" alt="" style="filter: brightness(0) invert(1);">
+                    Nova Rotina
+                </button>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+
+            <!-- ===== PAGE: ROTINAS ===== -->
+            <div class="page active" id="page-rotinas">
+
+                <!-- Stats -->
+                <div class="grid-3" style="margin-bottom: 28px;">
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon--orange">
+                            <img src="https://img.icons8.com/fluency/28/calendar.png" alt="">
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="stat-rotinas">2</div>
+                            <div class="stat-label">Rotinas ativas</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon--green">
+                            <img src="https://img.icons8.com/fluency/28/checked--v1.png" alt="">
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Tarefas hoje</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon--brown">
+                            <img src="https://img.icons8.com/fluency/28/robot-2.png" alt="">
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Concluídas hoje</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Routine list -->
+                <div class="routine-list" id="routine-list">
+                    <!-- Template de rotina preenchida -->
+                    <div class="routine-card open" id="routine-manha">
+                        <div class="routine-header" onclick="toggleRoutine('routine-manha')">
+                            <div class="routine-header-left">
+                                <div class="routine-icon-wrap">
+                                    <img src="https://img.icons8.com/fluency/24/sun--v1.png" alt="">
+                                </div>
+                                <div>
+                                    <div class="routine-name">Rotina da Manhã</div>
+                                    <div class="routine-meta">3 tarefas</div>
+                                </div>
+                            </div>
+                            <svg class="routine-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </div>
+                        <div class="routine-tasks">
+                            <div class="task-list">
+                                <div class="task-item">
+                                    <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
+                                    <div class="task-name">Escovar os dentes</div>
+                                    <div class="task-time">07:00</div>
+                                    <div class="task-actions">
+                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora">
+                                            <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
+                                        </button>
+                                        <button class="btn-icon" title="Remover">
+                                            <img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir">
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="task-item">
+                                    <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
+                                    <div class="task-name">Tomar café da manhã</div>
+                                    <div class="task-time">07:30</div>
+                                    <div class="task-actions">
+                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora">
+                                            <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
+                                        </button>
+                                        <button class="btn-icon" title="Remover">
+                                            <img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir">
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="task-item">
+                                    <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
+                                    <div class="task-name">Colocar a mochila</div>
+                                    <div class="task-time">08:00</div>
+                                    <div class="task-actions">
+                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora">
+                                            <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
+                                        </button>
+                                        <button class="btn-icon" title="Remover">
+                                            <img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="add-task-btn" onclick="openModal('modal-tarefa', 'routine-manha')">
+                                <img src="https://img.icons8.com/fluency/16/plus.png" alt="">
+                                Adicionar tarefa
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="routine-card" id="routine-tarde">
+                        <div class="routine-header" onclick="toggleRoutine('routine-tarde')">
+                            <div class="routine-header-left">
+                                <div class="routine-icon-wrap">
+                                    <img src="https://img.icons8.com/fluency/24/partly-cloudy-day--v1.png" alt="">
+                                </div>
+                                <div>
+                                    <div class="routine-name">Rotina da Tarde</div>
+                                    <div class="routine-meta">2 tarefas</div>
+                                </div>
+                            </div>
+                            <svg class="routine-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </div>
+                        <div class="routine-tasks">
+                            <div class="task-list">
+                                <div class="task-item">
+                                    <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
+                                    <div class="task-name">Lição de casa</div>
+                                    <div class="task-time">14:00</div>
+                                    <div class="task-actions">
+                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora">
+                                            <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
+                                        </button>
+                                        <button class="btn-icon" title="Remover">
+                                            <img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir">
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="task-item">
+                                    <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
+                                    <div class="task-name">Beber água</div>
+                                    <div class="task-time">15:00</div>
+                                    <div class="task-actions">
+                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora">
+                                            <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
+                                        </button>
+                                        <button class="btn-icon" title="Remover">
+                                            <img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="add-task-btn" onclick="openModal('modal-tarefa', 'routine-tarde')">
+                                <img src="https://img.icons8.com/fluency/16/plus.png" alt="">
+                                Adicionar tarefa
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PAGE: PERFIL ===== -->
+            <div class="page" id="page-perfil">
+                <div class="grid-2">
+                    <!-- Responsável -->
+                    <div class="card">
+                        <div class="card-title">Perfil do Responsável</div>
+                        <div class="card-subtitle">Suas informações de conta</div>
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar" id="profile-avatar-resp">M</div>
+                            <div class="profile-avatar-info">
+                                <h3 id="profile-name-resp">Maria Silva</h3>
+                                <p id="profile-email-resp">maria@email.com</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Nome completo</label>
+                            <input type="text" class="form-control" id="input-nome-resp" value="Maria Silva">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" class="form-control" id="input-email-resp" value="maria@email.com" disabled style="opacity: 0.6; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone</label>
+                            <input type="tel" class="form-control" id="input-tel-resp" placeholder="(00) 00000-0000">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveProfile('resp')" style="width:100%; justify-content: center;">Salvar Alterações</button>
+                    </div>
+
+                    <!-- Criança -->
+                    <div class="card">
+                        <div class="card-title">Perfil da Criança</div>
+                        <div class="card-subtitle">Dados do seu filho</div>
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar" id="profile-avatar-child" style="background: var(--dark); border-color: var(--dark-shadow); box-shadow: 0 6px 0 var(--dark-shadow);">L</div>
+                            <div class="profile-avatar-info">
+                                <h3 id="profile-name-child">Lucas Silva</h3>
+                                <p>Perfil da criança</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Nome da criança</label>
+                            <input type="text" class="form-control" id="input-nome-child" value="Lucas Silva">
+                        </div>
+                        <div class="form-group">
+                            <label>Idade</label>
+                            <input type="number" class="form-control" id="input-idade-child" placeholder="Ex: 8" min="1" max="18">
+                        </div>
+                        <div class="form-group">
+                            <label>Observações / Preferências</label>
+                            <textarea class="form-control" id="input-obs-child" rows="3" placeholder="Ex: Prefere interações curtas, reage bem a sons suaves..."></textarea>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveProfile('child')" style="width:100%; justify-content: center;">Salvar Alterações</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PAGE: DISPOSITIVO ===== -->
+            <div class="page" id="page-dispositivo">
+                <!-- Status card -->
+                <div class="device-status-card">
+                    <div class="device-oled">
+                        <div class="device-eyes">
+                            <span class="device-eye"></span>
+                            <span class="device-eye" style="animation-delay: 0.1s"></span>
+                        </div>
+                        <div class="device-mouth"></div>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name" id="device-display-name">UTOME do Lucas</div>
+                        <div class="device-meta" style="margin-bottom: 12px;">
+                            ID: <code id="device-display-id" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 6px; font-size: 0.8rem;">UTM-2024-XXXX</code>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <span class="badge badge-online"><span class="badge-dot badge-dot--green"></span> Conectado</span>
+                            <span class="badge badge-mode"><span class="badge-dot badge-dot--orange"></span> Modo Companhia</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <!-- Configurações do dispositivo -->
+                    <div class="card">
+                        <div class="card-title">Configurações do UTOME</div>
+                        <div class="card-subtitle">Personalize o comportamento do robô</div>
+
+                        <div class="form-group">
+                            <label>Nome do UTOME</label>
+                            <input type="text" class="form-control" id="input-device-name" value="UTOME do Lucas" placeholder="Ex: UTOME do João">
+                        </div>
+                        <div class="form-group">
+                            <label>ID do Dispositivo</label>
+                            <input type="text" class="form-control" id="input-device-id" placeholder="Ex: UTM-2024-ABCD">
+                        </div>
+
+                        <div class="toggle-row">
+                            <div>
+                                <div class="toggle-label">Modo Calmante</div>
+                                <div class="toggle-desc">Reduz estímulos e usa animações lentas quando ativado</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="toggle-calmante">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-row">
+                            <div>
+                                <div class="toggle-label">Sons de Celebração</div>
+                                <div class="toggle-desc">Ativa um beep suave ao concluir uma tarefa</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="toggle-sons" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-row">
+                            <div>
+                                <div class="toggle-label">Modo Offline</div>
+                                <div class="toggle-desc">Somente leitura — o UTOME opera sem Wi-Fi</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="toggle-offline" disabled>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="saveDevice()" style="width:100%; justify-content: center; margin-top: 24px;">Salvar Configurações</button>
+                    </div>
+
+                    <!-- Vincular novo dispositivo -->
+                    <div class="card" style="display: flex; flex-direction: column;">
+                        <div class="card-title">Vincular Dispositivo</div>
+                        <div class="card-subtitle">Conecte um novo UTOME à sua conta</div>
+                        <div style="flex:1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; padding: 24px 0;">
+                            <div style="width: 80px; height: 80px; background: var(--primary-light); border: 2.5px solid #FFD9A8; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <img src="https://img.icons8.com/fluency/40/link--v1.png" alt="">
+                            </div>
+                            <div>
+                                <p style="font-weight: 800; color: var(--text); font-size: 0.95rem; margin-bottom: 6px;">Novo dispositivo?</p>
+                                <p style="font-size: 0.85rem;">Digite o ID impresso na parte de baixo do seu UTOME para vinculá-lo à sua conta.</p>
+                            </div>
+                            <div class="form-group" style="width: 100%; margin-bottom: 0;">
+                                <input type="text" class="form-control" id="input-new-device-id" placeholder="Ex: UTM-2024-ABCD" style="text-align: center; font-size: 1rem; font-weight: 900; letter-spacing: 1px;">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="linkDevice()" style="width:100%; justify-content: center;">Vincular UTOME</button>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /page-content -->
+    </div><!-- /main -->
+
+    <!-- ===== MODAL: Nova Rotina ===== -->
+    <div class="modal-overlay" id="modal-rotina">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nova Rotina</h3>
+                <button class="modal-close" onclick="closeModal('modal-rotina')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Nome da Rotina</label>
+                <input type="text" class="form-control" id="new-routine-name" placeholder="Ex: Rotina da Noite">
+            </div>
+            <div class="form-group">
+                <label>Horário de início</label>
+                <input type="time" class="form-control" id="new-routine-time">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="closeModal('modal-rotina')">Cancelar</button>
+                <button class="btn btn-primary" onclick="createRoutine()">Criar Rotina</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Nova Tarefa ===== -->
+    <div class="modal-overlay" id="modal-tarefa">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nova Tarefa</h3>
+                <button class="modal-close" onclick="closeModal('modal-tarefa')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Nome da Tarefa</label>
+                <input type="text" class="form-control" id="new-task-name" placeholder="Ex: Beber água">
+            </div>
+            <div class="form-group">
+                <label>Horário</label>
+                <input type="time" class="form-control" id="new-task-time">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="closeModal('modal-tarefa')">Cancelar</button>
+                <button class="btn btn-primary" onclick="createTask()">Adicionar Tarefa</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let activeRoutineId = null;
+
+        // ---- Navegação de páginas ----
+        const pages = {
+            rotinas:     { title: 'Rotinas',     subtitle: 'Crie e gerencie as rotinas do seu filho' },
+            perfil:      { title: 'Perfil',      subtitle: 'Gerencie os dados do responsável e da criança' },
+            dispositivo: { title: 'Dispositivo', subtitle: 'Configure e vincule o seu UTOME' },
+        };
+
+        function showPage(id, btn) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('page-' + id).classList.add('active');
+            if (btn) btn.classList.add('active');
+            document.getElementById('topbar-title').textContent    = pages[id].title;
+            document.getElementById('topbar-subtitle').textContent = pages[id].subtitle;
+
+            // Botão da topbar
+            const topbarBtn = document.querySelector('.topbar-actions .btn-primary');
+            topbarBtn.style.display = id === 'rotinas' ? '' : 'none';
+        }
+
+        // ---- Abrir/fechar rotinas ----
+        function toggleRoutine(id) {
+            document.getElementById(id).classList.toggle('open');
+        }
+
+        // ---- Modais ----
+        function openModal(id, routineId) {
+            document.getElementById(id).classList.add('active');
+            if (routineId) activeRoutineId = routineId;
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Fechar modal clicando fora
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.remove('active');
+            });
+        });
+
+        // ---- Criar rotina ----
+        function createRoutine() {
+            const name = document.getElementById('new-routine-name').value.trim();
+            const time = document.getElementById('new-routine-time').value;
+            if (!name) return;
+
+            const id = 'routine-' + Date.now();
+            const card = document.createElement('div');
+            card.className = 'routine-card open';
+            card.id = id;
+            card.innerHTML = `
+                <div class="routine-header" onclick="toggleRoutine('${id}')">
+                    <div class="routine-header-left">
+                        <div class="routine-icon-wrap">
+                            <img src="https://img.icons8.com/fluency/24/calendar.png" alt="">
+                        </div>
+                        <div>
+                            <div class="routine-name">${name}</div>
+                            <div class="routine-meta">0 tarefas${time ? ' · ' + time : ''}</div>
+                        </div>
+                    </div>
+                    <svg class="routine-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="routine-tasks">
+                    <div class="task-list" id="tasks-${id}"></div>
+                    <button class="add-task-btn" onclick="openModal('modal-tarefa', '${id}')">
+                        <img src="https://img.icons8.com/fluency/16/plus.png" alt="">
+                        Adicionar tarefa
+                    </button>
+                </div>`;
+
+            document.getElementById('routine-list').appendChild(card);
+            document.getElementById('stat-rotinas').textContent = document.querySelectorAll('.routine-card').length;
+            document.getElementById('new-routine-name').value = '';
+            document.getElementById('new-routine-time').value = '';
+            closeModal('modal-rotina');
+        }
+
+        // ---- Criar tarefa ----
+        function createTask() {
+            const name = document.getElementById('new-task-name').value.trim();
+            const time = document.getElementById('new-task-time').value;
+            if (!name || !activeRoutineId) return;
+
+            const taskListId = activeRoutineId.startsWith('routine-') 
+                ? 'tasks-' + activeRoutineId 
+                : null;
+
+            const taskItem = document.createElement('div');
+            taskItem.className = 'task-item';
+            taskItem.innerHTML = `
+                <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
+                <div class="task-name">${name}</div>
+                <div class="task-time">${time || '--:--'}</div>
+                <div class="task-actions">
+                    <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora"><img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar"></button>
+                    <button class="btn-icon" title="Remover" onclick="this.closest('.task-item').remove()"><img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir"></button>
+                </div>`;
+
+            const container = taskListId 
+                ? document.getElementById(taskListId)
+                : document.querySelector(`#${activeRoutineId} .task-list`);
+
+            if (container) container.appendChild(taskItem);
+            document.getElementById('new-task-name').value = '';
+            document.getElementById('new-task-time').value = '';
+            closeModal('modal-tarefa');
+        }
+
+        // ---- Salvar perfil ----
+        function saveProfile(type) {
+            if (type === 'resp') {
+                const name = document.getElementById('input-nome-resp').value.trim();
+                if (!name) return;
+                document.getElementById('profile-name-resp').textContent = name;
+                document.getElementById('sidebar-name').textContent = name;
+                document.getElementById('sidebar-avatar').textContent = name[0].toUpperCase();
+                document.getElementById('profile-avatar-resp').textContent = name[0].toUpperCase();
+                showToast('Perfil do responsável salvo!');
+            } else {
+                const name = document.getElementById('input-nome-child').value.trim();
+                if (!name) return;
+                document.getElementById('profile-name-child').textContent = name;
+                document.getElementById('profile-avatar-child').textContent = name[0].toUpperCase();
+                showToast('Perfil da criança salvo!');
+            }
+        }
+
+        // ---- Salvar dispositivo ----
+        function saveDevice() {
+            const name = document.getElementById('input-device-name').value.trim();
+            const id   = document.getElementById('input-device-id').value.trim();
+            if (name) document.getElementById('device-display-name').textContent = name;
+            if (id)   document.getElementById('device-display-id').textContent   = id;
+            showToast('Configurações salvas!');
+        }
+
+        function linkDevice() {
+            const id = document.getElementById('input-new-device-id').value.trim();
+            if (!id) return;
+            document.getElementById('input-device-id').value = id;
+            document.getElementById('device-display-id').textContent = id;
+            document.getElementById('input-new-device-id').value = '';
+            showToast('UTOME vinculado com sucesso!');
+        }
+
+        // ---- Toast ----
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.textContent = msg;
+            Object.assign(t.style, {
+                position: 'fixed', bottom: '32px', right: '32px', zIndex: 999,
+                background: '#4A1F14', color: '#fff',
+                padding: '14px 24px', borderRadius: '14px',
+                fontFamily: 'Nunito, sans-serif', fontWeight: 800, fontSize: '0.9rem',
+                boxShadow: '0 6px 0 #361509',
+                opacity: 0, transition: 'opacity 0.3s',
+            });
+            document.body.appendChild(t);
+            requestAnimationFrame(() => t.style.opacity = 1);
+            setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 300); }, 2500);
+        }
+    </script>
+</body>
+</html>

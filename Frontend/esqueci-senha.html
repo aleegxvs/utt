@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esqueceu a Senha - UTOME</title>
+    <meta name="description"
+        content="Redefina sua senha da plataforma UTOME e volte a acompanhar as rotinas do seu filho.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #F57C00;
+            --primary-dark: #D06900;
+            --dark: #4A1F14;
+            --text-light: #8B6B63;
+            --border: #EAEAEA;
+            --white: #FFFFFF;
+            --font: 'Nunito', system-ui, sans-serif;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes floatOrb1 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(-25px, 35px) scale(1.08);
+            }
+        }
+
+        @keyframes floatOrb2 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(30px, -25px) scale(1.1);
+            }
+        }
+
+        body {
+            font-family: var(--font);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(-45deg, #8B3A0F, #F57C00, #4A1F14, #D06900, #FF9A3C, #8B3A0F);
+            background-size: 400% 400%;
+            animation: gradientShift 10s ease infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, rgba(230, 205, 170, 0.22) 0%, transparent 70%);
+            top: -80px;
+            left: 8%;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatOrb1 9s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 360px;
+            height: 360px;
+            background: radial-gradient(circle, rgba(255, 180, 80, 0.18) 0%, transparent 70%);
+            bottom: -60px;
+            right: 10%;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatOrb2 11s ease-in-out infinite;
+        }
+
+        /* Back link */
+        .back-link {
+            position: fixed;
+            top: 28px;
+            left: 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.85);
+            font-family: var(--font);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+
+        .back-link:hover {
+            color: #fff;
+        }
+
+        .back-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Wrapper */
+        .auth-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            width: 100%;
+            max-width: 420px;
+            padding: 24px;
+        }
+
+        .auth-brand img {
+            height: 60px;
+            width: auto;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+        }
+
+        /* Card */
+        .auth-card {
+            background: var(--white);
+            border-radius: 28px;
+            padding: 40px 36px 36px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(74, 31, 20, 0.35);
+        }
+
+        /* Icon de envelope */
+        .card-icon {
+            width: 72px;
+            height: 72px;
+            background: #FFF3E0;
+            border: 2.5px solid #FFD9A8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .card-heading {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .card-heading h1 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .card-heading p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-family: var(--font);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--dark);
+            background: #FAFAFA;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control::placeholder {
+            color: #C5BAB5;
+            font-weight: 600;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.12);
+            background: #fff;
+        }
+
+        /* Success state */
+        .success-state {
+            display: none;
+            text-align: center;
+            padding: 12px 0;
+        }
+
+        .success-state .success-icon {
+            width: 72px;
+            height: 72px;
+            background: #E8F5E9;
+            border: 2.5px solid #A5D6A7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .success-state h3 {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .success-state p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        /* Button */
+        .btn-reset {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-family: var(--font);
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 5px 0 var(--primary-dark);
+        }
+
+        .btn-reset:hover {
+            background: #E56F00;
+        }
+
+        .btn-reset:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        /* Footer */
+        .card-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .card-footer a {
+            color: var(--primary);
+            font-weight: 900;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .card-footer a:hover {
+            opacity: 0.75;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 32px 24px 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="login.html" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+        </svg>
+        Voltar ao Login
+    </a>
+
+    <div class="auth-wrapper">
+        <!-- Logo -->
+        <div class="auth-brand">
+            <img src="assets/logo.png" alt="UTOME Logo"
+                onerror="this.src='https://img.icons8.com/color/64/robot-2.png'">
+        </div>
+
+        <!-- Card -->
+        <div class="auth-card">
+
+            <!-- Estado inicial: formulário -->
+            <div id="form-state">
+                <div class="card-icon">
+                    <img src="https://img.icons8.com/fluency/40/filled-message.png" alt="E-mail">
+                </div>
+
+                <div class="card-heading">
+                    <h1>Esqueceu sua senha?</h1>
+                    <p>Sem problema! Informe seu e-mail e enviaremos um link para você criar uma nova senha.</p>
+                </div>
+
+                <form id="reset-form" novalidate>
+                    <div class="form-group">
+                        <label for="email">E-mail cadastrado</label>
+                        <input type="email" id="email" class="form-control" placeholder="Digite seu e-mail"
+                            autocomplete="email" required>
+                    </div>
+
+                    <button type="submit" class="btn-reset" id="btn-reset">Enviar Link de Redefinição</button>
+                </form>
+            </div>
+
+            <!-- Estado de sucesso (mostrado após envio) -->
+            <div class="success-state" id="success-state">
+                <div class="success-icon">
+                    <img src="https://img.icons8.com/fluency/40/checked--v1.png" alt="Enviado">
+                </div>
+                <h3>E-mail enviado!</h3>
+                <p>Verifique sua caixa de entrada. Se o e-mail estiver cadastrado, você receberá o link em
+                    breve.<br><br>Não esqueça de checar a pasta de spam.</p>
+            </div>
+
+            <div class="card-footer">
+                Lembrou a senha? <a href="login.html">Voltar ao login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('reset-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+
+            if (!email) {
+                document.getElementById('email').focus();
+                return;
+            }
+
+            // TODO: Firebase Auth – sendPasswordResetEmail(auth, email)
+            // Simula o envio e mostra o estado de sucesso
+            document.getElementById('form-state').style.display = 'none';
+            document.getElementById('success-state').style.display = 'block';
+        });
+    </script>
+</body>
+
+</html>

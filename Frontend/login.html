@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - UTOME</title>
+    <meta name="description" content="Acesse o painel do responsável UTOME para gerenciar as rotinas do seu filho.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #F57C00;
+            --primary-dark: #D06900;
+            --secondary: #E6CDAA;
+            --dark: #4A1F14;
+            --text-light: #8B6B63;
+            --border: #EAEAEA;
+            --white: #FFFFFF;
+            --font: 'Nunito', system-ui, sans-serif;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        body {
+            font-family: var(--font);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(-45deg, #F57C00, #D06900, #4A1F14, #8B3A0F, #FF9A3C, #D06900);
+            background-size: 400% 400%;
+            animation: gradientShift 10s ease infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Blurred orbs for depth */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(230, 205, 170, 0.25) 0%, transparent 70%);
+            top: -120px;
+            right: 8%;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatOrb1 8s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 180, 80, 0.2) 0%, transparent 70%);
+            bottom: -80px;
+            left: 5%;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatOrb2 10s ease-in-out infinite;
+        }
+
+        @keyframes floatOrb1 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(-30px, 40px) scale(1.1);
+            }
+        }
+
+        @keyframes floatOrb2 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(40px, -30px) scale(1.08);
+            }
+        }
+
+        /* Back link */
+        .back-link {
+            position: fixed;
+            top: 28px;
+            left: 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.85);
+            font-family: var(--font);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+
+        .back-link:hover {
+            color: #fff;
+        }
+
+        .back-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Central wrapper */
+        .auth-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            width: 100%;
+            max-width: 440px;
+            padding: 24px;
+        }
+
+        /* Logo + Title */
+        .auth-brand {
+            text-align: center;
+        }
+
+        .auth-brand img {
+            height: 60px;
+            width: auto;
+            margin-bottom: 4px;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+        }
+
+        /* White card */
+        .auth-card {
+            background: var(--white);
+            border-radius: 28px;
+            padding: 40px 36px 36px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(74, 31, 20, 0.35);
+        }
+
+        .card-heading {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .card-heading h1 {
+            font-size: 1.7rem;
+            font-weight: 900;
+            color: var(--dark);
+            line-height: 1.2;
+            margin-bottom: 6px;
+        }
+
+        .card-heading p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+            letter-spacing: 0.2px;
+        }
+
+        .form-control-wrap {
+            position: relative;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-family: var(--font);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--dark);
+            background: #FAFAFA;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control::placeholder {
+            color: #C5BAB5;
+            font-weight: 600;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.12);
+            background: #fff;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        /* Remember + Forgot */
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .remember-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .remember-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .forgot-link {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .forgot-link:hover {
+            opacity: 0.75;
+        }
+
+        /* Buttons */
+        .btn-signin {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-family: var(--font);
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 5px 0 var(--primary-dark);
+            letter-spacing: 0.3px;
+        }
+
+        .btn-signin:hover {
+            background: #E56F00;
+        }
+
+        .btn-signin:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: var(--border);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1.5px;
+            background: var(--border);
+        }
+
+        .divider span {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #C5BAB5;
+            white-space: nowrap;
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--white);
+            color: var(--dark);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-family: var(--font);
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: border-color 0.2s, background 0.2s;
+            box-shadow: 0 4px 0 var(--border);
+        }
+
+        .btn-google:hover {
+            border-color: #D5D0CB;
+            background: #FAFAFA;
+        }
+
+        .btn-google:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        .btn-google img {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Footer */
+        .card-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .card-footer a {
+            color: var(--primary);
+            font-weight: 900;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .card-footer a:hover {
+            opacity: 0.75;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 32px 24px 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Back to home -->
+    <a href="index.html" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+        </svg>
+        Página Inicial
+    </a>
+
+    <div class="auth-wrapper">
+        <!-- Logo -->
+        <div class="auth-brand">
+            <img src="assets/logo.png" alt="UTOME Logo"
+                onerror="this.src='https://img.icons8.com/color/64/robot-2.png'">
+        </div>
+
+        <!-- Card -->
+        <div class="auth-card">
+            <div class="card-heading">
+                <h1>Bem-vindo de volta!</h1>
+                <p>Acesse o painel do seu UTOME</p>
+            </div>
+
+            <form id="login-form" novalidate>
+                <!-- E-mail -->
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <div class="form-control-wrap">
+                        <input type="email" id="email" class="form-control" placeholder="Digite seu e-mail"
+                            autocomplete="email" required>
+                    </div>
+                </div>
+
+                <!-- Senha -->
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="form-control-wrap">
+                        <input type="password" id="password" class="form-control" placeholder="Digite sua senha"
+                            autocomplete="current-password" required style="padding-right: 48px;">
+                        <button type="button" class="toggle-password" onclick="togglePassword()" id="toggle-btn"
+                            aria-label="Mostrar senha">
+                            <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Opções -->
+                <div class="form-options">
+                    <label class="remember-label">
+                        <input type="checkbox" id="remember">
+                        Lembrar de mim
+                    </label>
+                    <a href="esqueci-senha.html" class="forgot-link">Esqueci a senha</a>
+                </div>
+
+                <!-- Entrar -->
+                <button type="submit" class="btn-signin" id="btn-login">Entrar</button>
+            </form>
+
+            <div class="divider"><span>ou continue com</span></div>
+
+            <!-- Google -->
+            <button class="btn-google" id="btn-google">
+                <img src="https://img.icons8.com/fluency/20/google-logo.png" alt="Google">
+                Entrar com Google
+            </button>
+
+            <!-- Footer -->
+            <div class="card-footer">
+                Ainda não tem conta? <a href="cadastro.html">Criar conta</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('eye-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+            } else {
+                input.type = 'password';
+                icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // TODO: Firebase Auth – login com e-mail/senha
+            alert('Login em breve! Firebase será integrado na próxima etapa.');
+        });
+
+        document.getElementById('btn-google').addEventListener('click', () => {
+            // TODO: Firebase Auth – Google Sign-In
+            alert('Login com Google em breve!');
+        });
+    </script>
+</body>
+
+</html>

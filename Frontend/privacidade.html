@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade - UTOME</title>
+
+    <!-- Meta tags SEO -->
+    <meta name="description"
+        content="Política de Privacidade do dispositivo UTOME Gen 1 e da plataforma de acompanhamento de rotinas.">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+
+    <style>
+        .legal-header {
+            background-color: var(--primary-light);
+            padding: 120px 0 60px;
+            text-align: center;
+            border-bottom: 2.5px solid var(--border-color);
+        }
+
+        .legal-header h1 {
+            font-size: 2.5rem;
+            color: var(--text-color);
+            margin-bottom: 16px;
+        }
+
+        .legal-header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .legal-content {
+            padding: 60px 0;
+            background-color: var(--background-color);
+        }
+
+        .legal-card {
+            background-color: var(--white);
+            border: 2.5px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: 0 8px 0 var(--border-shadow);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .legal-card h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin: 32px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed var(--border-color);
+        }
+
+        .legal-card h2:first-child {
+            margin-top: 0;
+        }
+
+        .legal-card p,
+        .legal-card li {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin-bottom: 16px;
+        }
+
+        .legal-card ul {
+            padding-left: 24px;
+            margin-bottom: 24px;
+        }
+
+        .legal-card li {
+            margin-bottom: 8px;
+        }
+
+        .legal-card strong {
+            font-weight: 800;
+            color: var(--dark-color);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== HEADER / NAV ===== -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="assets/logo.png" alt="UTOME Logo"
+                        onerror="this.src='https://img.icons8.com/color/48/robot-2.png'">
+                </a>
+            </div>
+            <nav class="nav-links">
+                <ul>
+                    <li><a href="index.html" class="btn btn-login">Voltar ao Início</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="legal-header">
+            <div class="container">
+                <h1>Política de Privacidade</h1>
+                <p>Última atualização: Setembro de 2026</p>
+            </div>
+        </section>
+
+        <section class="legal-content">
+            <div class="container">
+                <div class="legal-card">
+                    <p>A proteção da privacidade e dos dados dos nossos usuários é um pilar central do <strong>Projeto
+                            UTOME</strong>, especialmente por lidarmos com tecnologia assistiva para crianças com
+                        Transtorno do Espectro Autista (TEA).</p>
+
+                    <h2>1. O Nosso Compromisso com a Privacidade</h2>
+                    <p>O UTOME foi projetado com foco no <strong>baixo estímulo e na previsibilidade</strong>. Esse
+                        princípio se estende à captação de dados:</p>
+                    <ul>
+                        <li><strong>Não</strong> possui microfones para gravação de voz contínua.</li>
+                        <li><strong>Não</strong> possui câmeras ou sensores de imagem.</li>
+                        <li><strong>Não</strong> rastreamos a localização GPS do dispositivo.</li>
+                        <li>Suas funções básicas operam <strong>offline</strong>.</li>
+                    </ul>
+
+                    <h2>2. Dados Coletados</h2>
+                    <p>Coletamos apenas os dados necessários para o funcionamento do sistema:</p>
+                    <ul>
+                        <li><strong>Dados do Responsável (Plataforma Web):</strong> Nome, e-mail e dados de autenticação
+                            (Firebase Auth).</li>
+                        <li><strong>Dados do Dispositivo (UTOME):</strong> Bateria, conectividade, ID do Dispositivo
+                            (<code>device_id</code>) e o histórico de rotinas (quando a criança confirmou uma tarefa no
+                            sensor TTP223).</li>
+                    </ul>
+
+                    <h2>3. Uso e Armazenamento dos Dados</h2>
+                    <p>Os dados são armazenados de forma segura na infraestrutura do <strong>Google Firebase</strong>,
+                        sendo encriptados em trânsito (HTTPS) e em repouso. Eles são utilizados exclusivamente para
+                        permitir que o Responsável acompanhe as rotinas no painel.</p>
+
+                    <h2>4. Compartilhamento de Dados</h2>
+                    <p>Nós <strong>não vendemos, alugamos ou compartilhamos</strong> os dados pessoais dos responsáveis
+                        ou os dados de rotina das crianças com terceiros, anunciantes ou empresas de marketing.</p>
+
+                    <h2>5. Proteção à Privacidade Infantil (LGPD/COPPA)</h2>
+                    <p>O UTOME não se comunica diretamente com a criança via internet aberta, nem solicita dados da
+                        criança. A criação da conta, a definição das tarefas e o monitoramento são feitos
+                        <strong>exclusivamente pelo Responsável Legal</strong>.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <img src="assets/logo.png" alt="UTOME Logo" class="footer-logo"
+                    onerror="this.src='https://img.icons8.com/color/64/robot-2.png'">
+                <p>Tecnologia que acolhe.</p>
+            </div>
+            <div class="footer-links">
+                <a href="termos.html">Termos de Uso</a>
+                <a href="privacidade.html">Política de Privacidade</a>
+            </div>
+            <div class="footer-copy">
+                <p>&copy; 2026 UTOME Gen 1. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
