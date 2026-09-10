@@ -2,8 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const cron = require('node-cron');
-const crypto = require('crypto');
-const { db, auth } = require('./firebase-admin');
+const { db, rtdb, auth } = require('./firebase-admin');
 
 const app = express();
 
@@ -19,15 +18,15 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Permitir requisições sem origin (ex: ESP32 microcontrolador, curl local)
+        // Permitir requisições sem origin (ex: ESP32 microcontrolador, curl local, Postman)
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
             callback(new Error('Bloqueado por política de CORS de segurança'));
         }
     },
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-device-id', 'device-id']
 }));
 
 app.use(express.json({ limit: '10kb' })); // Proteção contra Payload Flooding
@@ -35,7 +34,7 @@ app.use(express.json({ limit: '10kb' })); // Proteção contra Payload Flooding
 // ── SEGURANÇA: RATE LIMITER EM MEMÓRIA ──
 const rateLimits = new Map();
 
-function rateLimiter({ windowMs = 60 * 1000, max = 10, message = 'Muitas requisições. Tente novamente mais tarde.' } = {}) {
+function rateLimiter({ windowMs = 60 * 1000, max = 30, message = 'Muitas requisições. Tente novamente mais tarde.' } = {}) {
     return (req, res, next) => {
         const ip = req.ip || req.connection.remoteAddress || 'unknown';
         const now = Date.now();
@@ -77,19 +76,21 @@ async function requireAuth(req, res, next) {
     }
 }
 
-// Constantes
-const EXPIRATION_MINUTES = 5;
+// Helper: Validador de formato de device_id
+function isValidDeviceId(deviceId) {
+    if (typeof deviceId !== 'string') return false;
+    // Padrão UTOME-XXXXXX (6 caracteres alfanuméricos) ou variações seguras
+    return /^UTOME-[A-Za-z0-9_-]{4,12}$/.test(deviceId.trim());
+}
 
-// ── SEGURANÇA: CSPRNG (Criptografia Segura com crypto.randomBytes) ──
-function generatePairingCode() {
-    // Caracteres alfanuméricos sem I, O, 0, 1 (evita ambiguidade e falhas humanas)
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let code = '';
-    const bytes = crypto.randomBytes(6);
-    for (let i = 0; i < 6; i++) {
-        code += chars[bytes[i] % chars.length];
-    }
-    return code;
+// Helper: Buscar proprietário do device_id no Firestore
+async function getDeviceOwner(deviceId) {
+    if (!db) return null;
+    const cleanId = deviceId.trim();
+    const snapshot = await db.collection('users').where('device_id', '==', cleanId).limit(1).get();
+    if (snapshot.empty) return null;
+    const doc = snapshot.docs[0];
+    return { uid: doc.id, data: doc.data() };
 }
 
 // ── ROTAS DA API ──
@@ -99,128 +100,443 @@ app.get('/api/health', (req, res) => {
     res.json({
         status: 'ok',
         service: 'UTOME API',
-        version: '1.4.0'
+        version: '2.0.0',
+        rtdb_ready: !!rtdb,
+        firestore_ready: !!db
     });
 });
 
-// 1. Gerar um novo código de pareamento (Requer Autenticação + Rate Limiter)
-app.post('/api/pair/generate', requireAuth, rateLimiter({ windowMs: 60 * 1000, max: 5 }), async (req, res) => {
-    try {
-        const uid = req.user.uid; // Extraído do token criptográfico verificado
+// ─────────────────────────────────────────────────────────────
+// 1. ENDPOINTS DE DISPOSITIVO (ESP32 <-> API)
+// ─────────────────────────────────────────────────────────────
 
-        if (!db) {
-            return res.status(500).json({ error: 'Firestore não inicializado (Falta serviceAccountKey.json).' });
+/**
+ * POST /api/device/connect
+ * Chamado pelo ESP32 após conexão ao WiFi via Captive Portal
+ * Body: { device_id: "UTOME-XXXXXX", firmware: "1.0.0" }
+ */
+app.post('/api/device/connect', rateLimiter({ windowMs: 60 * 1000, max: 20 }), async (req, res) => {
+    try {
+        const { device_id, firmware } = req.body;
+
+        if (!device_id || !isValidDeviceId(device_id)) {
+            return res.status(400).json({ error: 'Identificador device_id ausente ou inválido (formato esperado: UTOME-XXXXXX).' });
         }
 
-        const code = generatePairingCode();
-        const expiresAt = Date.now() + (EXPIRATION_MINUTES * 60 * 1000);
+        const cleanDeviceId = device_id.trim();
+        const owner = await getDeviceOwner(cleanDeviceId);
 
-        // Salvar na coleção 'pairing_codes'
-        await db.collection('pairing_codes').doc(code).set({
-            uid: uid,
-            expiresAt: expiresAt,
-            createdAt: Date.now()
-        });
+        if (!owner) {
+            return res.status(404).json({
+                error: 'Dispositivo não encontrado. Certifique-se de gerar o ID na plataforma web antes de conectar o UTOME.'
+            });
+        }
+
+        const now = Date.now();
+        const firmwareVer = typeof firmware === 'string' ? firmware.slice(0, 20) : '1.0.0';
+
+        // Atualizar no Realtime Database (usado para telemetria em tempo real com o dashboard)
+        if (rtdb) {
+            await rtdb.ref(`devices/${cleanDeviceId}`).update({
+                online: true,
+                last_seen: now,
+                state: 'COMPANION',
+                firmware: firmwareVer,
+                owner_uid: owner.uid
+            });
+        }
+
+        // Atualizar status no documento do usuário no Firestore
+        if (db) {
+            await db.collection('users').doc(owner.uid).set({
+                device_status: {
+                    online: true,
+                    last_seen: now,
+                    firmware: firmwareVer
+                }
+            }, { merge: true });
+        }
+
+        console.log(`[Device Connect] UTOME ${cleanDeviceId} conectado com sucesso para o usuário ${owner.uid}`);
 
         res.json({
             success: true,
-            code: code,
-            expiresIn: EXPIRATION_MINUTES * 60 // Segundos
+            device_id: cleanDeviceId,
+            owner_uid: owner.uid,
+            status: 'connected',
+            server_time: now
         });
 
     } catch (error) {
-        console.error("Erro ao gerar código:", error);
-        res.status(500).json({ error: 'Erro interno ao gerar código.' });
+        console.error("Erro em /api/device/connect:", error);
+        res.status(500).json({ error: 'Erro interno ao conectar dispositivo.' });
     }
 });
 
-// 2. Vincular Dispositivo (Chamado pelo ESP32 — Rate Limiter Anti-Brute-Force)
-app.post('/api/pair/link', rateLimiter({ windowMs: 60 * 1000, max: 10, message: 'Muitas tentativas. Bloqueado temporariamente por segurança.' }), async (req, res) => {
+/**
+ * GET /api/device/status
+ * Chamado pelo ESP32 para verificar seu estado e configurações
+ * Headers: device-id ou x-device-id ou query param: ?device_id=...
+ */
+app.get('/api/device/status', rateLimiter({ windowMs: 60 * 1000, max: 60 }), async (req, res) => {
     try {
-        const { code, device_id } = req.body;
-        
-        if (!code || !device_id) {
-            return res.status(400).json({ error: 'code e device_id são obrigatórios.' });
+        const deviceId = req.headers['device-id'] || req.headers['x-device-id'] || req.query.device_id;
+
+        if (!deviceId || !isValidDeviceId(deviceId)) {
+            return res.status(400).json({ error: 'device_id ausente ou inválido.' });
         }
 
-        // Validação de entrada
-        if (typeof code !== 'string' || code.trim().length !== 6) {
-            return res.status(400).json({ error: 'Código deve conter exatamente 6 caracteres.' });
+        const cleanDeviceId = deviceId.trim();
+
+        if (rtdb) {
+            const snapshot = await rtdb.ref(`devices/${cleanDeviceId}`).once('value');
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                return res.json({
+                    success: true,
+                    device_id: cleanDeviceId,
+                    online: !!data.online,
+                    state: data.state || 'COMPANION',
+                    task: data.task || null,
+                    comando_pendente: data.comando_pendente || null,
+                    configs: data.configs || {}
+                });
+            }
         }
 
-        if (typeof device_id !== 'string' || device_id.length > 50 || !/^[A-Za-z0-9_-]+$/.test(device_id)) {
-            return res.status(400).json({ error: 'Identificador device_id inválido.' });
+        // Se não achou no RTDB, checar se pertence a um usuário
+        const owner = await getDeviceOwner(cleanDeviceId);
+        if (!owner) {
+            return res.status(404).json({ error: 'Dispositivo não encontrado.' });
+        }
+
+        res.json({
+            success: true,
+            device_id: cleanDeviceId,
+            online: false,
+            state: 'COMPANION',
+            configs: owner.data.configuracoes || {}
+        });
+
+    } catch (error) {
+        console.error("Erro em /api/device/status:", error);
+        res.status(500).json({ error: 'Erro interno ao consultar status do dispositivo.' });
+    }
+});
+
+/**
+ * POST /api/device/events
+ * Chamado pelo ESP32 quando a criança conclui uma tarefa (3 toques) ou outro evento físico
+ * Body: { device_id, type: "routine_complete", routine_id, task_name, timestamp }
+ */
+app.post('/api/device/events', rateLimiter({ windowMs: 60 * 1000, max: 30 }), async (req, res) => {
+    try {
+        const { device_id, type, routine_id, task_name, timestamp } = req.body;
+
+        if (!device_id || !isValidDeviceId(device_id)) {
+            return res.status(400).json({ error: 'device_id ausente ou inválido.' });
+        }
+
+        const cleanDeviceId = device_id.trim();
+        const owner = await getDeviceOwner(cleanDeviceId);
+
+        if (!owner) {
+            return res.status(404).json({ error: 'Dispositivo não vinculado a um usuário válido.' });
+        }
+
+        const eventType = type || 'routine_complete';
+        const eventTimestamp = timestamp || Date.now();
+
+        // 1. Gravar no histórico permanente do Firestore: users/{uid}/eventos
+        if (db) {
+            await db.collection('users').doc(owner.uid).collection('eventos').add({
+                device_id: cleanDeviceId,
+                type: eventType,
+                task_name: task_name || 'Rotina concluída',
+                routine_id: routine_id || null,
+                timestamp: eventTimestamp,
+                createdAt: Date.now()
+            });
+        }
+
+        // 2. Atualizar estado no Realtime Database (retorna para Modo Companhia e limpa comando pendente)
+        if (rtdb) {
+            await rtdb.ref(`devices/${cleanDeviceId}`).update({
+                state: 'COMPANION',
+                task: null,
+                comando_pendente: null,
+                last_routine_complete: eventTimestamp,
+                last_seen: Date.now()
+            });
+        }
+
+        console.log(`[Device Event] Evento '${eventType}' registrado para ${cleanDeviceId} (Usuário: ${owner.uid})`);
+
+        res.json({
+            success: true,
+            message: 'Evento registrado e estado do UTOME atualizado para COMPANION.',
+            device_id: cleanDeviceId,
+            timestamp: eventTimestamp
+        });
+
+    } catch (error) {
+        console.error("Erro em /api/device/events:", error);
+        res.status(500).json({ error: 'Erro interno ao registrar evento do dispositivo.' });
+    }
+});
+
+/**
+ * POST /api/device/offline
+ * Chamado pelo ESP32 ao desligar ou reiniciar intencionalmente
+ * Body: { device_id }
+ */
+app.post('/api/device/offline', rateLimiter({ windowMs: 60 * 1000, max: 20 }), async (req, res) => {
+    try {
+        const { device_id } = req.body;
+
+        if (!device_id || !isValidDeviceId(device_id)) {
+            return res.status(400).json({ error: 'device_id ausente ou inválido.' });
+        }
+
+        const cleanDeviceId = device_id.trim();
+        const now = Date.now();
+
+        if (rtdb) {
+            await rtdb.ref(`devices/${cleanDeviceId}`).update({
+                online: false,
+                last_seen: now
+            });
+        }
+
+        res.json({ success: true, message: 'Dispositivo marcado como offline.', device_id: cleanDeviceId });
+
+    } catch (error) {
+        console.error("Erro em /api/device/offline:", error);
+        res.status(500).json({ error: 'Erro interno ao atualizar estado offline.' });
+    }
+});
+
+// ─────────────────────────────────────────────────────────────
+// 2. ENDPOINTS DE ROTINAS (DASHBOARD / RESPONSÁVEL <-> API)
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/routines/send
+ * Envia uma tarefa imediatamente para o UTOME
+ * Requer autenticação do responsável (Bearer token)
+ * Body: { device_id, task, routine_id }
+ */
+app.post('/api/routines/send', requireAuth, rateLimiter({ windowMs: 60 * 1000, max: 30 }), async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        const { device_id, task, routine_id } = req.body;
+
+        if (!task || typeof task !== 'string' || task.trim().length === 0) {
+            return res.status(400).json({ error: 'Nome da tarefa é obrigatório.' });
+        }
+
+        if (!device_id || !isValidDeviceId(device_id)) {
+            return res.status(400).json({ error: 'device_id ausente ou inválido.' });
+        }
+
+        const cleanDeviceId = device_id.trim();
+
+        // Validar que o dispositivo pertence ao usuário logado
+        if (db) {
+            const userDoc = await db.collection('users').doc(uid).get();
+            if (!userDoc.exists || userDoc.data().device_id !== cleanDeviceId) {
+                return res.status(403).json({ error: 'Acesso negado: Este dispositivo não pertence à sua conta.' });
+            }
+        }
+
+        const cleanTask = task.trim().slice(0, 100);
+        const timestamp = Date.now();
+
+        // Grava no Realtime Database para notificar o ESP32 em tempo real
+        if (rtdb) {
+            await rtdb.ref(`devices/${cleanDeviceId}`).update({
+                state: 'ROUTINE_PENDING',
+                task: cleanTask,
+                comando_pendente: {
+                    acao: 'EXECUTAR_TAREFA',
+                    nome_tarefa: cleanTask,
+                    routine_id: routine_id || null,
+                    timestamp: timestamp
+                }
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Rotina enviada com sucesso para o UTOME!',
+            device_id: cleanDeviceId,
+            task: cleanTask,
+            timestamp: timestamp
+        });
+
+    } catch (error) {
+        console.error("Erro em /api/routines/send:", error);
+        res.status(500).json({ error: 'Erro interno ao enviar rotina.' });
+    }
+});
+
+/**
+ * GET /api/routines
+ * Lista todas as rotinas e tarefas salvas do usuário autenticado
+ */
+app.get('/api/routines', requireAuth, async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        if (!db) {
+            return res.status(500).json({ error: 'Firestore não inicializado.' });
+        }
+
+        const routinesSnap = await db.collection('users').doc(uid).collection('rotinas').get();
+        const routines = [];
+
+        for (const doc of routinesSnap.docs) {
+            const routineData = doc.data();
+            const tasksSnap = await doc.ref.collection('tarefas').get();
+            const tasks = tasksSnap.docs.map(t => ({ id: t.id, ...t.data() }));
+
+            routines.push({
+                id: doc.id,
+                ...routineData,
+                tarefas: tasks
+            });
+        }
+
+        res.json({ success: true, routines });
+
+    } catch (error) {
+        console.error("Erro em /api/routines:", error);
+        res.status(500).json({ error: 'Erro interno ao buscar rotinas.' });
+    }
+});
+
+/**
+ * POST /api/routines
+ * Cria uma nova rotina para o usuário autenticado
+ * Body: { nome: "Manhã", hora: "08:00", tarefas: [{ nome: "Escovar os dentes", horario: "08:10" }] }
+ */
+app.post('/api/routines', requireAuth, rateLimiter({ windowMs: 60 * 1000, max: 20 }), async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        const { nome, hora, tarefas } = req.body;
+
+        if (!nome || typeof nome !== 'string' || nome.trim().length === 0) {
+            return res.status(400).json({ error: 'O nome da rotina é obrigatório.' });
         }
 
         if (!db) {
             return res.status(500).json({ error: 'Firestore não inicializado.' });
         }
 
-        const cleanCode = code.trim().toUpperCase();
-        const codeRef = db.collection('pairing_codes').doc(cleanCode);
-        const docSnap = await codeRef.get();
-
-        if (!docSnap.exists) {
-            return res.status(404).json({ error: 'Código inválido ou não encontrado.' });
-        }
-
-        const data = docSnap.data();
-
-        // Verificar se expirou
-        if (Date.now() > data.expiresAt) {
-            await codeRef.delete(); // Já apaga
-            return res.status(400).json({ error: 'Código expirado.' });
-        }
-
-        // Código válido! Vincular o dispositivo ao usuário
-        const userUid = data.uid;
-
-        // Atualizar o perfil do usuário com o device_id
-        await db.collection('users').doc(userUid).update({
-            device_id: device_id.trim()
+        const routineRef = await db.collection('users').doc(uid).collection('rotinas').add({
+            nome: nome.trim().slice(0, 80),
+            hora: typeof hora === 'string' ? hora.trim() : '',
+            createdAt: Date.now()
         });
 
-        // Apagar o código para que não seja reutilizado
-        await codeRef.delete();
+        // Adicionar tarefas se informadas
+        if (Array.isArray(tarefas) && tarefas.length > 0) {
+            const batch = db.batch();
+            for (const t of tarefas) {
+                if (t && t.nome) {
+                    const taskRef = routineRef.collection('tarefas').doc();
+                    batch.set(taskRef, {
+                        nome: String(t.nome).trim().slice(0, 80),
+                        horario: t.horario ? String(t.horario).trim() : '',
+                        createdAt: Date.now()
+                    });
+                }
+            }
+            await batch.commit();
+        }
 
         res.json({
             success: true,
-            message: 'Dispositivo vinculado com sucesso!',
-            uid: userUid
+            id: routineRef.id,
+            message: 'Rotina criada com sucesso.'
         });
 
     } catch (error) {
-        console.error("Erro ao vincular dispositivo:", error);
-        res.status(500).json({ error: 'Erro interno ao vincular.' });
+        console.error("Erro ao criar rotina:", error);
+        res.status(500).json({ error: 'Erro interno ao criar rotina.' });
     }
 });
 
-// ── CRON JOB (Limpeza de códigos expirados) ──
-// Roda a cada minuto
-cron.schedule('* * * * *', async () => {
-    if (!db) return;
+/**
+ * DELETE /api/routines/:id
+ * Exclui uma rotina e suas tarefas
+ */
+app.delete('/api/routines/:id', requireAuth, async (req, res) => {
     try {
-        const now = Date.now();
-        const expiredQuery = await db.collection('pairing_codes')
-            .where('expiresAt', '<', now)
-            .get();
-        
-        if (expiredQuery.empty) return;
+        const uid = req.user.uid;
+        const routineId = req.params.id;
 
+        if (!routineId || typeof routineId !== 'string') {
+            return res.status(400).json({ error: 'ID da rotina inválido.' });
+        }
+
+        if (!db) {
+            return res.status(500).json({ error: 'Firestore não inicializado.' });
+        }
+
+        const routineRef = db.collection('users').doc(uid).collection('rotinas').doc(routineId);
+        const docSnap = await routineRef.get();
+
+        if (!docSnap.exists) {
+            return res.status(404).json({ error: 'Rotina não encontrada.' });
+        }
+
+        // Excluir tarefas filhas
+        const tasksSnap = await routineRef.collection('tarefas').get();
         const batch = db.batch();
-        expiredQuery.docs.forEach(doc => {
-            batch.delete(doc.ref);
+        tasksSnap.docs.forEach(t => batch.delete(t.ref));
+        batch.delete(routineRef);
+        await batch.commit();
+
+        res.json({ success: true, message: 'Rotina excluída com sucesso.' });
+
+    } catch (error) {
+        console.error("Erro ao excluir rotina:", error);
+        res.status(500).json({ error: 'Erro interno ao excluir rotina.' });
+    }
+});
+
+// ── CRON JOB (Verificação de heartbeat de dispositivos) ──
+// A cada 5 minutos, marca dispositivos sem sinal há mais de 10 minutos como offline
+cron.schedule('*/5 * * * *', async () => {
+    if (!rtdb) return;
+    try {
+        const snapshot = await rtdb.ref('devices').once('value');
+        if (!snapshot.exists()) return;
+
+        const now = Date.now();
+        const TIMEOUT_MS = 10 * 60 * 1000; // 10 minutos sem sinal = offline
+        const updates = {};
+        let offlineCount = 0;
+
+        snapshot.forEach(childSnap => {
+            const dev = childSnap.val();
+            if (dev && dev.online && dev.last_seen && (now - dev.last_seen > TIMEOUT_MS)) {
+                updates[`devices/${childSnap.key}/online`] = false;
+                offlineCount++;
+            }
         });
 
-        await batch.commit();
-        console.log(`[Cron] Removidos ${expiredQuery.size} códigos de pareamento expirados.`);
+        if (offlineCount > 0) {
+            await rtdb.ref().update(updates);
+            console.log(`[Cron Heartbeat] ${offlineCount} dispositivos marcados como offline por inatividade.`);
+        }
     } catch (error) {
-        console.error("[Cron] Erro ao limpar códigos:", error);
+        console.error("[Cron Heartbeat] Erro ao verificar heartbeat:", error);
     }
 });
 
 // ── START SERVER ──
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`API do UTOME rodando com segurança ativa na porta ${PORT}`);
+    console.log(`API do UTOME 2.0 rodando com segurança ativa na porta ${PORT}`);
 });

@@ -2,11 +2,12 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Usuários só podem ler e escrever nos SEUS próprios documentos e subcoleções
+    // ── USUÁRIOS E DADOS PRIVADOS ──
+    // Regra estrita: Cada usuário só pode ler, gravar e modificar seus próprios documentos e subcoleções.
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
 
-      // Subcoleção de rotinas
+      // Subcoleção de rotinas cadastradas pelo responsável
       match /rotinas/{rotinaId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
 
@@ -15,10 +16,28 @@ service cloud.firestore {
           allow read, write: if request.auth != null && request.auth.uid == userId;
         }
       }
+
+      // Subcoleção de eventos históricos (tarefas concluídas pelo UTOME com 3 toques)
+      match /eventos/{eventoId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Subcoleção de configurações adicionais
+      match /configuracoes/{configId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
     }
 
-    // Códigos temporários de pareamento: acesso direto do cliente é bloqueado.
-    // Manipulado exclusivamente pelo Firebase Admin SDK no Backend.
+    // ── DISPOSITIVOS (METADADOS GLOBAIS) ──
+    // Leitura: apenas o usuário autenticado proprietário do dispositivo
+    // Escrita: proibida para clientes web; manipulada exclusivamente pelo Backend (Firebase Admin SDK)
+    match /devices/{deviceId} {
+      allow read: if request.auth != null && resource.data.owner_uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    // ── CÓDIGOS DE PAREAMENTO (LEGADO / SEGURANÇA) ──
+    // Acesso direto do cliente bloqueado completamente.
     match /pairing_codes/{code} {
       allow read, write: if false;
     }
