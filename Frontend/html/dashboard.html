@@ -1011,17 +1011,28 @@
                             <div class="face-mouth"></div>
                         </div>
                         <div>
-                            <p style="font-weight:800;font-size:0.88rem;">Novo dispositivo?</p>
-                            <p style="font-size:0.78rem;color:var(--text-muted);font-weight:600;margin-top:4px;">Digite o ID impresso na base do seu UTOME.</p>
+                            <p style="font-weight:800;font-size:0.88rem;">Vincular novo UTOME</p>
+                            <p style="font-size:0.78rem;color:var(--text-muted);font-weight:600;margin-top:4px;max-width:220px;">Gere um código seguro de 5 minutos para o seu dispositivo.</p>
                         </div>
-                        <div class="form-group" style="width:100%;margin:0;">
-                            <input type="text" class="form-control" id="d-new-id" placeholder="UTOME-XXXXXX" style="text-align:center;font-family:monospace;font-size:1rem;font-weight:900;letter-spacing:1px;">
+                        
+                        <div id="pairing-ui-idle" style="width:100%;margin-top:10px;">
+                            <button class="btn btn-outline" style="width:100%;justify-content:center;padding:12px;" onclick="generatePairingCode()">
+                                <img src="https://img.icons8.com/fluency/20/key.png" alt=""> Gerar Código
+                            </button>
+                        </div>
+                        
+                        <div id="pairing-ui-active" style="display:none;width:100%;flex-direction:column;align-items:center;margin-top:10px;">
+                            <div style="font-size:1.8rem;font-weight:900;letter-spacing:4px;color:var(--text);font-family:monospace;" id="pairing-code-display">------</div>
+                            <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);margin-top:4px;">
+                                Expira em <span id="pairing-timer" style="color:var(--red);">05:00</span>
+                            </div>
+                            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:12px;text-align:center;max-width:240px;">
+                                Digite este código no seu UTOME (via App/Serial) para vincular à sua conta.
+                            </p>
                         </div>
                     </div>
 
-                    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="linkDevice()">
-                        Vincular dispositivo
-                    </button>
+                    <!-- Retirado o botão de vincular manual pois agora o dispositivo se auto-vincula através do código gerado -->
                 </div>
             </div>
         </div>
@@ -1512,17 +1523,69 @@
         } catch (e) { toast('Erro ao salvar.'); }
     };
 
-    window.linkDevice = async () => {
-        const id = document.getElementById('d-new-id').value.trim().toUpperCase();
-        if (!id) return;
-        const d = doc(db, "users", currentUser.uid);
+    // ── Pairing Code Generation ──
+    let pairingTimerInterval = null;
+    
+    window.generatePairingCode = async () => {
+        if (!currentUser) return;
+        
         try {
-            await updateDoc(d, { device_id: id });
-            document.getElementById('d-new-id').value = '';
-            await loadProfile();
-            toast('UTOME vinculado com sucesso!');
-        } catch (e) { toast('Erro ao vincular.'); }
+            // A API de pareamento estará rodando na pasta db/ (ex: localhost:3000 ou URL de produção)
+            const apiUrl = 'http://localhost:3000/api/pair/generate'; 
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: currentUser.uid })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('pairing-ui-idle').style.display = 'none';
+                const activeUi = document.getElementById('pairing-ui-active');
+                activeUi.style.display = 'flex';
+                
+                document.getElementById('pairing-code-display').textContent = data.code;
+                
+                startPairingTimer(data.expiresIn);
+                toast('Código gerado! Digite no seu UTOME.');
+            } else {
+                toast(data.error || 'Erro ao gerar código.');
+            }
+        } catch (error) {
+            console.error(error);
+            toast('Erro ao conectar com a API de pareamento.');
+        }
     };
+    
+    function startPairingTimer(totalSeconds) {
+        if (pairingTimerInterval) clearInterval(pairingTimerInterval);
+        
+        let timeLeft = totalSeconds;
+        const timerDisplay = document.getElementById('pairing-timer');
+        
+        const updateDisplay = () => {
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            timerDisplay.textContent = `${m}:${s}`;
+        };
+        
+        updateDisplay();
+        
+        pairingTimerInterval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(pairingTimerInterval);
+                document.getElementById('pairing-ui-active').style.display = 'none';
+                document.getElementById('pairing-ui-idle').style.display = 'flex';
+                toast('O código de pareamento expirou.');
+            } else {
+                updateDisplay();
+            }
+        }, 1000);
+    }
+
 
     // ── Logout ──
     window.logout = async () => {
