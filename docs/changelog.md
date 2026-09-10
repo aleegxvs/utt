@@ -108,10 +108,15 @@ A formatação segue as diretrizes do [Keep a Changelog](https://keepachangelog.
 ### Alterado
 - **Animação da imagem hero removida** (`Frontend/css/styles.css`): Removida a animação de flutuação e sombra/borda da classe `.floating-robot` para que adesivos PNG com fundo transparente renderizem corretamente.
 - **CSS totalmente reestruturado** (`Frontend/css/styles.css`): Cada seção agora possui bloco de estilos isolado e comentado. Novas variáveis CSS adicionadas (`--primary-light`, `--dark-color`, `--dark-shadow`, `--radius-xl`, etc.).
-- **Navegação atualizada**: Links do nav agora apontam para todas as seções reais da página com âncoras (`#problema`, `#como-funciona`, `#funcionalidades`, `#prototipo`).
-- **`<h1>` movido** do logo/brand para o título do Hero, corrigindo hierarquia semântica de SEO.
-
 ## [1.1.0] — 2026-09-09
+
+### Adicionado
+- **Serviço de Pareamento (API Gen 1)** (`db/`): 
+  - Criado o servidor Node.js (Express) independente.
+  - Endpoint `POST /api/pair/generate` para criar códigos temporários de 6 caracteres.
+  - Endpoint `POST /api/pair/link` preparado para receber conexão e pareamento do hardware (.ino).
+  - Integrado mecanismo Cron para deleção automática de códigos após 5 minutos.
+  - Dashboard atualizado: A tela agora gera um código dinâmico com temporizador de expiração, substituindo a entrada manual do MAC/ID.
 
 ### Alterado
 - **Dashboard Refeita do Zero** (`Frontend/html/dashboard.html`): 
@@ -120,6 +125,11 @@ A formatação segue as diretrizes do [Keep a Changelog](https://keepachangelog.
   - Conectividade 100% via Firebase (Firestore e Realtime DB), com gestão real de perfil, criação dinâmica de Rotinas/Tarefas e sincronismo de Device.
   - Lógica do `dashboard.js` foi consolidada num bloco unificado em módulo na própria página, simplificando as importações (e o arquivo antigo `dashboard.js` foi deletado).
   - Atualização real do estado offline/online do Utome e sincronização fidedigna com os estados detalhados na Arquitetura (COMPANION, PENDING).
+  - Logo original (completa) reinserida na sidebar do painel.
+  - Suporte completo ao upload de Foto de Perfil (Responsável e Criança), com redimensionamento inteligente da foto pelo navegador e salvamento no Firestore via base64, sem consumo do Firebase Storage.
+
+### Corrigido
+- **Página de Cadastro** (`cadastro.html`): Corrigido bug (`TypeError: Cannot read properties of null (reading 'value')`) onde a lógica de cadastro buscava o ID `name` em vez de `first-name` e `last-name`. Agora, a submissão interliga os campos Nome e Sobrenome corretamente.
 
 ---
 
