@@ -624,6 +624,62 @@
         .modal-footer { display: flex; gap: 10px; margin-top: 20px; }
         .modal-footer .btn { flex: 1; justify-content: center; }
 
+        /* ─── LINK STEPS (captive portal) ─── */
+        .link-step {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .link-step-num {
+            min-width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .link-step-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .link-step-title {
+            font-size: 0.88rem;
+            font-weight: 900;
+            color: var(--text);
+        }
+
+        .link-step-desc {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .link-fields-list {
+            margin: 6px 0 0 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            list-style: none;
+        }
+
+        .link-fields-list li {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
         /* ─── NO DEVICE BANNER ─── */
         .no-device-banner {
             background: var(--primary-light);
@@ -1002,37 +1058,63 @@
                     <div class="card-title">Vincular UTOME</div>
                     <div class="card-sub">Conecte um dispositivo à sua conta</div>
 
-                    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:20px 0;">
-                        <div class="device-face" style="width:70px;height:58px;">
-                            <div class="face-eyes">
-                                <span class="face-eye"></span>
-                                <span class="face-eye" style="animation-delay:.12s"></span>
-                            </div>
-                            <div class="face-mouth"></div>
-                        </div>
-                        <div>
-                            <p style="font-weight:800;font-size:0.88rem;">Vincular novo UTOME</p>
-                            <p style="font-size:0.78rem;color:var(--text-muted);font-weight:600;margin-top:4px;max-width:220px;">Gere um código seguro de 5 minutos para o seu dispositivo.</p>
-                        </div>
-                        
-                        <div id="pairing-ui-idle" style="width:100%;margin-top:10px;">
-                            <button class="btn btn-outline" style="width:100%;justify-content:center;padding:12px;" onclick="generatePairingCode()">
-                                <img src="https://img.icons8.com/fluency/20/key.png" alt=""> Gerar Código
-                            </button>
-                        </div>
-                        
-                        <div id="pairing-ui-active" style="display:none;width:100%;flex-direction:column;align-items:center;margin-top:10px;">
-                            <div style="font-size:1.8rem;font-weight:900;letter-spacing:4px;color:var(--text);font-family:monospace;" id="pairing-code-display">------</div>
-                            <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);margin-top:4px;">
-                                Expira em <span id="pairing-timer" style="color:var(--red);">05:00</span>
-                            </div>
-                            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:12px;text-align:center;max-width:240px;">
-                                Digite este código no seu UTOME (via App/Serial) para vincular à sua conta.
-                            </p>
-                        </div>
-                    </div>
+                    <!-- Estado: sem device vinculado -->
+                    <div id="link-idle" style="flex:1;display:flex;flex-direction:column;gap:16px;padding:16px 0;">
 
-                    <!-- Retirado o botão de vincular manual pois agora o dispositivo se auto-vincula através do código gerado -->
+                        <!-- Passo 1: Gerar ID -->
+                        <div class="link-step">
+                            <div class="link-step-num">1</div>
+                            <div class="link-step-body">
+                                <div class="link-step-title">Gere o ID do seu UTOME</div>
+                                <div class="link-step-desc">Clique para gerar um identificador único para o seu dispositivo.</div>
+                                <div id="device-id-generated" style="display:none;margin-top:10px;">
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <code id="generated-id-display" style="font-size:1.1rem;font-weight:900;letter-spacing:2px;color:var(--primary);font-family:monospace;">UTOME-??????</code>
+                                        <button class="btn btn-outline" style="padding:5px 10px;font-size:0.75rem;" onclick="copyDeviceId()" title="Copiar ID">
+                                            <img src="https://img.icons8.com/fluency/14/copy.png" alt="Copiar">
+                                        </button>
+                                    </div>
+                                    <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;font-weight:600;">Guarde este ID — você vai precisar logo abaixo.</p>
+                                </div>
+                                <button class="btn btn-outline" id="btn-gen-id" style="margin-top:10px;width:100%;justify-content:center;" onclick="generateDeviceId()">
+                                    <img src="https://img.icons8.com/fluency/16/key.png" alt=""> Gerar ID
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Passo 2: Ligar o UTOME -->
+                        <div class="link-step">
+                            <div class="link-step-num">2</div>
+                            <div class="link-step-body">
+                                <div class="link-step-title">Ligue o UTOME</div>
+                                <div class="link-step-desc">O UTOME vai criar uma rede WiFi chamada <strong>UTOME-Setup</strong>. Conecte o seu celular ou computador nessa rede.</div>
+                            </div>
+                        </div>
+
+                        <!-- Passo 3: Portal de configuração -->
+                        <div class="link-step">
+                            <div class="link-step-num">3</div>
+                            <div class="link-step-body">
+                                <div class="link-step-title">Configure no portal</div>
+                                <div class="link-step-desc">Uma página de configuração abrirá automaticamente. Preencha:</div>
+                                <ul class="link-fields-list">
+                                    <li>📶 Nome do WiFi de casa (SSID)</li>
+                                    <li>🔑 Senha do WiFi</li>
+                                    <li>🤖 ID do dispositivo (gerado no Passo 1)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Passo 4: Aguardar conexão -->
+                        <div class="link-step">
+                            <div class="link-step-num">4</div>
+                            <div class="link-step-body">
+                                <div class="link-step-title">Pronto!</div>
+                                <div class="link-step-desc">O UTOME vai conectar ao WiFi e aparecer como <strong style="color:var(--green);">Conectado ●</strong> neste painel.</div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -1534,71 +1616,50 @@
         } catch (e) { toast('Erro ao salvar.'); }
     };
 
-    // ── Pairing Code Generation ──
-    let pairingTimerInterval = null;
-    
-    window.generatePairingCode = async () => {
+    // ── Generate Device ID ──
+    let generatedDeviceId = null;
+
+    window.generateDeviceId = async () => {
         if (!currentUser) return;
-        
+
+        // Se já tem device vinculado, não deixar gerar outro
+        if (profile?.device_id) {
+            toast('Já existe um UTOME vinculado a esta conta.');
+            return;
+        }
+
+        // Gerar ID aleatório no formato UTOME-XXXXXX
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let suffix = '';
+        for (let i = 0; i < 6; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+        const newId = 'UTOME-' + suffix;
+        generatedDeviceId = newId;
+
+        // Salvar no Firestore
         try {
-            // Obter token de autenticação legítimo do Firebase
-            const idToken = await currentUser.getIdToken();
-            const apiUrl = 'http://localhost:3000/api/pair/generate'; 
-            
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${idToken}`
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                document.getElementById('pairing-ui-idle').style.display = 'none';
-                const activeUi = document.getElementById('pairing-ui-active');
-                activeUi.style.display = 'flex';
-                
-                document.getElementById('pairing-code-display').textContent = data.code;
-                
-                startPairingTimer(data.expiresIn);
-                toast('Código gerado! Digite no seu UTOME.');
-            } else {
-                toast(data.error || 'Erro ao gerar código.');
-            }
-        } catch (error) {
-            console.error(error);
-            toast('Erro ao conectar com a API de pareamento.');
+            const d = doc(db, "users", currentUser.uid);
+            await updateDoc(d, { device_id: newId });
+
+            // Mostrar ID gerado
+            document.getElementById('generated-id-display').textContent = newId;
+            document.getElementById('device-id-generated').style.display = 'block';
+            document.getElementById('btn-gen-id').textContent = '↺ Gerar outro ID';
+            document.getElementById('d-id').value = newId;
+
+            await loadProfile();
+            toast('ID gerado: ' + newId);
+        } catch (e) {
+            console.error(e);
+            toast('Erro ao gerar ID. Tente novamente.');
         }
     };
-    
-    function startPairingTimer(totalSeconds) {
-        if (pairingTimerInterval) clearInterval(pairingTimerInterval);
-        
-        let timeLeft = totalSeconds;
-        const timerDisplay = document.getElementById('pairing-timer');
-        
-        const updateDisplay = () => {
-            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-            const s = (timeLeft % 60).toString().padStart(2, '0');
-            timerDisplay.textContent = `${m}:${s}`;
-        };
-        
-        updateDisplay();
-        
-        pairingTimerInterval = setInterval(() => {
-            timeLeft--;
-            if (timeLeft <= 0) {
-                clearInterval(pairingTimerInterval);
-                document.getElementById('pairing-ui-active').style.display = 'none';
-                document.getElementById('pairing-ui-idle').style.display = 'flex';
-                toast('O código de pareamento expirou.');
-            } else {
-                updateDisplay();
-            }
-        }, 1000);
-    }
+
+    window.copyDeviceId = () => {
+        const id = document.getElementById('generated-id-display')?.textContent;
+        if (id && navigator.clipboard) {
+            navigator.clipboard.writeText(id).then(() => toast('ID copiado!'));
+        }
+    };
 
 
     // ── Logout ──

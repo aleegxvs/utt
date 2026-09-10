@@ -415,15 +415,15 @@
                         <div class="timeline-content">
                             <span class="timeline-step">01</span>
                             <h4>Pesquisa</h4>
-                            <p>Estudo sobre TEA, estimulos sensoriais e solucoes tecnologicas existentes.</p>
+                            <p>Estudo sobre TEA, estímulos sensoriais e soluções tecnológicas existentes. Identificamos o que faltava: algo calmo, simples e acessível.</p>
                         </div>
                     </div>
                     <div class="timeline-item">
                         <div class="timeline-dot timeline-dot--done"></div>
                         <div class="timeline-content">
                             <span class="timeline-step">02</span>
-                            <h4>Definicao do Problema</h4>
-                            <p>Identificacao da lacuna: criancas autistas precisam de tecnologia calma e previsivel.</p>
+                            <h4>Definição do Problema</h4>
+                            <p>Identificação da lacuna: crianças com TEA precisam de tecnologia calma, previsível e feita especialmente para elas.</p>
                         </div>
                     </div>
                     <div class="timeline-item">
@@ -431,15 +431,15 @@
                         <div class="timeline-content">
                             <span class="timeline-step">03</span>
                             <h4>Conceito e Componentes</h4>
-                            <p>ESP32-C3, OLED 128x64, sensores TTP223, bateria 18650 e modulo TP4056.</p>
+                            <p>Escolha do ESP32-C3, display OLED 128×64, sensores TTP223, bateria 18650 e módulo TP4056. Cada componente escolhido pelo equilíbrio entre custo, tamanho e função.</p>
                         </div>
                     </div>
                     <div class="timeline-item timeline-item--current">
                         <div class="timeline-dot timeline-dot--current"></div>
                         <div class="timeline-content">
                             <span class="timeline-step">04 <span class="timeline-badge-current">Em andamento</span></span>
-                            <h4>Circuito e Programacao</h4>
-                            <p>Montagem do hardware e desenvolvimento do firmware com os estados de interacao.</p>
+                            <h4>Circuito e Programação</h4>
+                            <p>Montagem do hardware e desenvolvimento do firmware com a máquina de estados: BOOT → WELCOME → COMPANION → ROUTINE_PENDING → ROUTINE_COMPLETE.</p>
                         </div>
                     </div>
                     <div class="timeline-item timeline-item--locked">
@@ -447,7 +447,7 @@
                         <div class="timeline-content">
                             <span class="timeline-step">05</span>
                             <h4>Testes e Melhorias</h4>
-                            <p>Validacao pratica, ajustes de sensibilidade, autonomia de bateria e experiencia de uso.</p>
+                            <p>Validação prática, ajustes de sensibilidade dos sensores, autonomia de bateria e refinamento da experiência de uso com crianças.</p>
                         </div>
                     </div>
                     <div class="timeline-item timeline-item--locked">
@@ -455,7 +455,7 @@
                         <div class="timeline-content">
                             <span class="timeline-step">06</span>
                             <h4>UTOME Gen 1</h4>
-                            <p>O primeiro companheiro robotico acolhedor, pronto para apoiar criancas com TEA.</p>
+                            <p>O primeiro companheiro robótico acolhedor, pronto para apoiar crianças com TEA em suas rotinas do dia a dia.</p>
                         </div>
                     </div>
                 </div>
@@ -468,22 +468,53 @@
                 <div class="section-header">
                     <span class="badge">Experimente</span>
                     <h2>Veja o UTOME em ação.</h2>
-                    <p class="section-subtitle">Uma simulação simples de como o robô responde ao toque.</p>
+                    <p class="section-subtitle">Simule os três estados reais do UTOME — do modo companhia à conclusão de uma tarefa.</p>
                 </div>
-                <div class="demo-card">
-                    <div class="demo-screen" id="demo-screen">
-                        <div class="demo-face" id="demo-face">
-                            <div class="demo-eyes">
-                                <span class="demo-eye"></span>
-                                <span class="demo-eye"></span>
+                <div class="demo-wrapper">
+                    <!-- OLED Display -->
+                    <div class="demo-oled" id="demo-oled">
+                        <div class="oled-screen" id="oled-screen">
+                            <div class="oled-face" id="oled-face">
+                                <div class="oled-eyes">
+                                    <span class="oled-eye" id="oled-eye-l"></span>
+                                    <span class="oled-eye" id="oled-eye-r"></span>
+                                </div>
+                                <div class="oled-mouth" id="oled-mouth"></div>
                             </div>
-                            <div class="demo-mouth"></div>
+                            <p class="oled-text" id="oled-text">Modo Companhia</p>
+                            <div class="oled-dots" id="oled-dots">
+                                <span class="oled-dot" id="dot-1"></span>
+                                <span class="oled-dot" id="dot-2"></span>
+                                <span class="oled-dot" id="dot-3"></span>
+                            </div>
                         </div>
-                        <p class="demo-message" id="demo-message">Pressione o botão para interagir</p>
+                        <div class="oled-label">Display OLED 128×64</div>
                     </div>
-                    <button class="btn btn-primary btn-demo" id="demo-btn" onclick="triggerDemo()">
-                        <img src="https://img.icons8.com/fluency/24/hand.png" alt="Toque"> Tocar no UTOME
-                    </button>
+
+                    <!-- Controles -->
+                    <div class="demo-controls">
+                        <div class="demo-state-info" id="demo-state-info">
+                            <span class="demo-state-badge demo-state-companion" id="demo-state-badge">COMPANION</span>
+                            <p id="demo-state-desc">O UTOME está em modo companhia — animações calmas, resposta livre ao toque.</p>
+                        </div>
+
+                        <div class="demo-actions">
+                            <!-- Botão: Tocar (modo companhia) -->
+                            <button class="btn btn-primary btn-demo" id="demo-btn-touch" onclick="demoTouch()">
+                                <img src="https://img.icons8.com/fluency/20/hand.png" alt="Toque"> Tocar no UTOME
+                            </button>
+                            <!-- Botão: Enviar rotina (responsável) -->
+                            <button class="btn btn-secondary btn-demo" id="demo-btn-routine" onclick="demoSendRoutine()" style="display:none;">
+                                <img src="https://img.icons8.com/fluency/20/add-list.png" alt="Rotina"> Responsável envia tarefa
+                            </button>
+                            <!-- Botão: Dar 3 toques -->
+                            <button class="btn btn-primary btn-demo" id="demo-btn-confirm" onclick="demoConfirmTouch()" style="display:none;">
+                                <img src="https://img.icons8.com/fluency/20/hand.png" alt="Toque"> Toque <span id="touch-count-display">0</span>/3
+                            </button>
+                        </div>
+
+                        <p class="demo-hint">⚠️ Simulação — apenas representação do funcionamento real do UTOME.</p>
+                    </div>
                 </div>
             </div>
         </section>

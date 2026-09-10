@@ -253,31 +253,37 @@ Resposta conceitual:
 
 ## 10. Cadastro de um UTOME
 
-Fluxo inicial:
+O fluxo de vinculação utiliza um **captive portal no ESP32** (modo AP). Veja a seção 20 para o detalhamento completo.
+
+Resumo do fluxo:
 
 ```text
-ESP32-C3 recebe device_id
+Responsável acessa "Dispositivo" no dashboard
             |
             v
-       UTOME é ligado
+   Site gera um device_id único
+   (ex: UTOME-7F3A92) e salva no Firestore
             |
             v
-Responsável cria/entra na conta
+   Responsável liga o UTOME físico
+   → ESP32 entra em modo AP (hotspot)
             |
             v
-      Adicionar UTOME
+   Responsável conecta à rede "UTOME-Setup"
+   → Captive portal abre automaticamente
             |
             v
-     Informar/verificar ID
+   Responsável preenche:
+   - SSID (nome do WiFi de casa)
+   - Senha do WiFi de casa
+   - device_id gerado no site
             |
             v
-       API verifica
+   ESP32 salva, reinicia e conecta ao WiFi
             |
             v
-    Dispositivo é vinculado
-            |
-            v
-UTOME aparece no painel
+   Com internet: ESP32 envia device_id à API
+   → UTOME aparece como online no painel
 ```
 
 ## 11. API única
@@ -627,3 +633,168 @@ ROUTINE_COMPLETE             |
   | (após feedback OLED)     |
   +-------------------------+
 ```
+
+---
+
+## 20. Configuração Inicial — Captive Portal (WiFi Provisioning)
+
+> Esta seção documenta o fluxo de primeira configuração do UTOME Gen 1, que utiliza o **modo AP (Access Point) do ESP32-C3** para receber as credenciais de rede e o `device_id` gerado pelo site.
+
+### 20.1 Visão geral do fluxo
+
+```text
+SITE (dashboard)
+      |
+      | 1. Gera device_id único (ex: UTOME-7F3A92)
+      |    Salva no Firestore: users/{uid}/device_id = "UTOME-7F3A92"
+      v
+RESPONSÁVEL copia o device_id
+      |
+      | 2. Liga o UTOME físico pela primeira vez
+      v
+ESP32-C3 (modo AP)
+      |
+      | 3. Cria hotspot WiFi: "UTOME-Setup" (sem senha)
+      v
+RESPONSÁVEL conecta o celular/PC na rede "UTOME-Setup"
+      |
+      | 4. Captive portal abre automaticamente no browser
+      v
+FORMULÁRIO DE CONFIGURAÇÃO (servido pelo ESP32)
+      |
+      | 5. Responsável preenche:
+      |      - SSID: nome do WiFi de casa
+      |      - Senha: senha do WiFi de casa
+      |      - ID do Dispositivo: UTOME-7F3A92 (copiado do site)
+      v
+ESP32-C3 salva as credenciais em memória não-volátil (NVS/EEPROM)
+      |
+      | 6. ESP32 reinicia em modo STA (station)
+      v
+ESP32-C3 conecta ao WiFi de casa
+      |
+      | 7. Com internet: POST /api/device/connect
+      |      { device_id: "UTOME-7F3A92", firmware: "1.0.0" }
+      v
+UTOME API verifica o device_id no Firestore
+      |
+      | 8. Marca o dispositivo como online no Realtime Database
+      |      devices/UTOME-7F3A92/online: true
+      v
+PAINEL DO RESPONSÁVEL atualiza em tempo real → "UTOME Conectado ✓"
+```
+
+### 20.2 Geração do device_id no site
+
+O `device_id` é **gerado pelo site**, não pelo ESP32. Isso garante que:
+
+- O dispositivo já está registrado no Firestore antes de se conectar
+- O responsável tem controle sobre qual ID pertence à sua conta
+- O ESP32 só precisa "confirmar" a conexão, não criar sua identidade
+
+Formato do ID:
+
+```text
+UTOME-XXXXXX
+```
+
+Onde `XXXXXX` é uma string aleatória de 6 caracteres alfanuméricos maiúsculos (ex: `7F3A92`, `A82B11`).
+
+Armazenamento no Firestore:
+
+```text
+users/{uid}
+  ├── device_id: "UTOME-7F3A92"
+  └── configuracoes/
+        ├── device_name: "UTOME do João"
+        ├── modo_calmante: false
+        └── sons_celebracao: true
+```
+
+### 20.3 Comportamento do ESP32 — estados de boot
+
+```text
+BOOT
+  |
+  v
+Verificar NVS: tem credenciais salvas?
+  |
+  +-- SIM → conectar ao WiFi → modo STA → operação normal
+  |
+  +-- NÃO → entrar em modo AP → iniciar captive portal
+              |
+              v
+         Aguardar formulário preenchido
+              |
+              v
+         Salvar SSID + senha + device_id no NVS
+              |
+              v
+         Reiniciar → fluxo SIM acima
+```
+
+> **Nota:** Após a configuração inicial, o ESP32 **não volta ao modo AP** automaticamente. Para reconfigurar (ex: trocar de WiFi), o responsável deverá realizar um reset manual do dispositivo (ex: botão de reset ou sequência de toques longa).
+
+### 20.4 Captive Portal — interface servida pelo ESP32
+
+O ESP32 serve uma página HTML simples em `http://192.168.4.1` (IP padrão do modo AP):
+
+```html
+Configurar UTOME
+
+Nome da rede WiFi (SSID):
+[ ________________________ ]
+
+Senha do WiFi:
+[ ________________________ ]
+
+ID do Dispositivo (obtido no site):
+[ UTOME-________ ]
+
+[ Conectar ]
+```
+
+Após o envio, o ESP32 responde com uma confirmação e reinicia em 3 segundos.
+
+### 20.5 Comunicação ESP32 → API após configuração
+
+Ao se conectar ao WiFi de casa, o ESP32 faz:
+
+```json
+POST /api/device/connect
+{
+  "device_id": "UTOME-7F3A92",
+  "firmware": "1.0.0"
+}
+```
+
+A API responde:
+
+```json
+{
+  "success": true,
+  "device_id": "UTOME-7F3A92",
+  "owner_uid": "uid_do_responsavel",
+  "status": "connected"
+}
+```
+
+E grava no Realtime Database:
+
+```text
+devices/UTOME-7F3A92/
+  ├── online: true
+  ├── last_seen: <timestamp>
+  ├── state: "COMPANION"
+  └── firmware: "1.0.0"
+```
+
+### 20.6 Segurança do fluxo
+
+| Aspecto | Medida |
+|---|---|
+| Rede do captive portal | Sem senha, mas temporária e local (ESP32 desliga o AP após configuração) |
+| Transmissão SSID/senha | Trafega apenas na rede local (ESP32 AP), sem passar pela internet |
+| device_id sem conta | Um device_id sem `owner_uid` no Firestore é inútil para acessar dados |
+| Comunicação ESP32 → API | HTTPS obrigatório |
+| Validação da API | Verifica se o `device_id` existe e pertence a um usuário antes de marcar como online |

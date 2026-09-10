@@ -1382,4 +1382,246 @@ p {
         transform: rotate(90deg);
         padding-top: 0;
     }
+
+    .demo-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .demo-controls {
+        width: 100%;
+    }
+}
+
+/* ==========================================================================
+   Demo Interativa — OLED + Controles (v2)
+   ========================================================================== */
+
+.section-demo {
+    padding: 80px 0;
+    background: var(--background-color);
+}
+
+.demo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+/* ── OLED Display ── */
+.demo-oled {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.oled-screen {
+    width: 220px;
+    height: 110px;
+    background: #0a0a0a;
+    border-radius: 12px;
+    border: 3px solid #333;
+    box-shadow: 0 0 0 6px #1a1a1a, 0 8px 32px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+    position: relative;
+    transition: box-shadow 0.3s;
+}
+
+.oled-screen.oled-pulse {
+    box-shadow: 0 0 0 6px #1a1a1a, 0 8px 32px rgba(245,124,0,0.4), inset 0 0 20px rgba(245,124,0,0.1);
+}
+
+.oled-screen.oled-routine {
+    box-shadow: 0 0 0 6px #1a1a1a, 0 8px 32px rgba(245,180,0,0.4), inset 0 0 20px rgba(245,180,0,0.08);
+}
+
+.oled-screen.oled-complete {
+    box-shadow: 0 0 0 6px #1a1a1a, 0 8px 32px rgba(34,197,94,0.5), inset 0 0 20px rgba(34,197,94,0.1);
+}
+
+.oled-face {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.oled-eyes {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.oled-eye {
+    display: block;
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.oled-eye.eye-open {
+    animation: oledBlink 3.5s infinite;
+}
+
+.oled-eye.eye-star {
+    background: transparent;
+    color: #FFD700;
+    font-size: 12px;
+    width: auto;
+    height: auto;
+}
+
+.oled-eye.eye-star::after {
+    content: '★';
+    color: #FFD700;
+}
+
+@keyframes oledBlink {
+    0%, 90%, 100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.1); }
+}
+
+.oled-mouth {
+    width: 20px;
+    height: 10px;
+    border-radius: 0 0 12px 12px;
+    transition: all 0.3s;
+}
+
+.oled-mouth.mouth-smile {
+    border: 2px solid #fff;
+    border-top: none;
+}
+
+.oled-mouth.mouth-neutral {
+    border-bottom: 2px solid #fff;
+    border-radius: 0;
+    height: 2px;
+}
+
+.oled-mouth.mouth-big-smile {
+    width: 28px;
+    height: 14px;
+    border: 2.5px solid #22c55e;
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+}
+
+.oled-text {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.5px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.oled-dots {
+    display: none;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.oled-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1.5px solid #555;
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.oled-dot.dot-filled {
+    background: #F57C00;
+    border-color: #F57C00;
+    box-shadow: 0 0 6px rgba(245,124,0,0.8);
+}
+
+.oled-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* ── Controles ── */
+.demo-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 340px;
+}
+
+.demo-state-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.demo-state-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+.demo-state-companion {
+    background: #DCFCE7;
+    color: #15803D;
+}
+
+.demo-state-routine {
+    background: #FEF3C7;
+    color: #D97706;
+}
+
+.demo-state-complete {
+    background: #DCFCE7;
+    color: #15803D;
+}
+
+.demo-state-info p {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+.demo-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-demo {
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    font-size: 0.9rem;
+}
+
+.demo-hint {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    font-weight: 600;
+    text-align: center;
+    opacity: 0.8;
 }
