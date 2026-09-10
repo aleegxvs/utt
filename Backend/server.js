@@ -134,6 +134,7 @@ app.post('/api/device/connect', rateLimiter({ windowMs: 60 * 1000, max: 20 }), a
 
         const now = Date.now();
         const firmwareVer = typeof firmware === 'string' ? firmware.slice(0, 20) : '1.0.0';
+        const userConfigs = owner.data.configuracoes || { modo_calmante: false, sons_celebracao: true };
 
         // Atualizar no Realtime Database (usado para telemetria em tempo real com o dashboard)
         if (rtdb) {
@@ -142,7 +143,8 @@ app.post('/api/device/connect', rateLimiter({ windowMs: 60 * 1000, max: 20 }), a
                 last_seen: now,
                 state: 'COMPANION',
                 firmware: firmwareVer,
-                owner_uid: owner.uid
+                owner_uid: owner.uid,
+                configs: userConfigs
             });
         }
 
@@ -164,6 +166,7 @@ app.post('/api/device/connect', rateLimiter({ windowMs: 60 * 1000, max: 20 }), a
             device_id: cleanDeviceId,
             owner_uid: owner.uid,
             status: 'connected',
+            configs: userConfigs,
             server_time: now
         });
 
@@ -189,13 +192,19 @@ app.get('/api/device/status', rateLimiter({ windowMs: 60 * 1000, max: 60 }), asy
         const cleanDeviceId = deviceId.trim();
 
         if (rtdb) {
+            // Heartbeat: atualizar last_seen e online sempre que o dispositivo consulta o status
+            await rtdb.ref(`devices/${cleanDeviceId}`).update({
+                online: true,
+                last_seen: Date.now()
+            });
+
             const snapshot = await rtdb.ref(`devices/${cleanDeviceId}`).once('value');
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 return res.json({
                     success: true,
                     device_id: cleanDeviceId,
-                    online: !!data.online,
+                    online: true,
                     state: data.state || 'COMPANION',
                     task: data.task || null,
                     comando_pendente: data.comando_pendente || null,
@@ -502,6 +511,28 @@ app.delete('/api/routines/:id', requireAuth, async (req, res) => {
     } catch (error) {
         console.error("Erro ao excluir rotina:", error);
         res.status(500).json({ error: 'Erro interno ao excluir rotina.' });
+    }
+});
+
+/**
+ * GET /api/events
+ * Retorna o histórico de eventos/conquistas registradas pelo UTOME (ex: 3 toques)
+ */
+app.get('/api/events', requireAuth, async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        if (!db) return res.status(500).json({ error: 'Firestore não inicializado.' });
+
+        const snapshot = await db.collection('users').doc(uid).collection('eventos')
+            .orderBy('timestamp', 'desc')
+            .limit(10)
+            .get();
+
+        const eventos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        res.json({ success: true, eventos });
+    } catch (error) {
+        console.error("Erro em /api/events:", error);
+        res.status(500).json({ error: 'Erro ao buscar eventos.' });
     }
 });
 

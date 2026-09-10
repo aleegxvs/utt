@@ -906,6 +906,20 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Histórico de Conquistas do UTOME em tempo real -->
+            <div class="card" id="conquistas-card" style="margin-top:20px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                    <div class="card-title" style="margin-bottom:0;">🎉 Conquistas Recentes</div>
+                    <span class="badge badge-green" style="font-size:0.7rem;"><span class="dot dot-green"></span> Tempo real</span>
+                </div>
+                <div class="card-sub">Tarefas confirmadas pela criança com 3 toques no sensor do UTOME</div>
+                <div id="conquistas-list">
+                    <div style="font-size:0.8rem;color:var(--text-muted);font-weight:600;padding:12px 0;">
+                        Aguardando primeiras conquistas pelo UTOME...
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- ═══ PAGE: ROTINAS ═══ -->
@@ -1079,6 +1093,11 @@
                                 <button class="btn btn-outline" id="btn-gen-id" style="margin-top:10px;width:100%;justify-content:center;" onclick="generateDeviceId()">
                                     <img src="https://img.icons8.com/fluency/16/key.png" alt=""> Gerar ID
                                 </button>
+                                <div id="btn-unlink-container" style="display:none;margin-top:8px;">
+                                    <button class="btn btn-outline" style="width:100%;justify-content:center;font-size:0.75rem;color:var(--danger);border-color:var(--danger);" onclick="unlinkDevice()">
+                                        Desvincular UTOME desta conta
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -1175,13 +1194,14 @@
 <script type="module">
     import { auth, db, rtdb } from '../js/firebase/config.js';
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-    import { doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-    import { ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+    import { doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    import { ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
 
     // ── State ──
     let currentUser = null;
     let profile = null;
     let activeRoutineId = null;
+    let unsubscribeEvents = null;
     // In-memory routine store {id: {nome, hora, tasks:[]}}
     let routineStore = {};
 
@@ -1202,6 +1222,7 @@
         currentUser = user;
         await loadProfile();
         await loadRoutines();
+        listenEvents();
         renderInicio();
     });
 
@@ -1258,16 +1279,33 @@
         document.getElementById('t-calmante').checked = !!cfg.modo_calmante;
         document.getElementById('t-sons').checked = cfg.sons_celebracao !== false;
 
-        // Device badge / overview
+        // Device badge / overview & Vincular section
         if (profile.device_id) {
             document.getElementById('ov-device-name').textContent = cfg.device_name || profile.device_id;
             document.getElementById('ov-device-id').textContent = profile.device_id;
             document.getElementById('no-device-banner').style.display = 'none';
             document.getElementById('device-overview-section').style.display = 'block';
+
+            // Card Vincular (Passo 1)
+            document.getElementById('generated-id-display').textContent = profile.device_id;
+            document.getElementById('device-id-generated').style.display = 'block';
+            document.getElementById('btn-gen-id').innerHTML = '✓ ID Vinculado';
+            document.getElementById('btn-gen-id').disabled = true;
+            document.getElementById('btn-unlink-container').style.display = 'block';
+
             listenRTDB(profile.device_id);
         } else {
+            document.getElementById('ov-device-name').textContent = '—';
+            document.getElementById('ov-device-id').textContent = '—';
             document.getElementById('no-device-banner').style.display = 'flex';
             document.getElementById('device-overview-section').style.display = 'none';
+
+            // Card Vincular (Passo 1)
+            document.getElementById('device-id-generated').style.display = 'none';
+            document.getElementById('btn-gen-id').innerHTML = '<img src="https://img.icons8.com/fluency/16/key.png" alt=""> Gerar ID';
+            document.getElementById('btn-gen-id').disabled = false;
+            document.getElementById('btn-unlink-container').style.display = 'none';
+
             updateDeviceBadge(false, null);
         }
     }
@@ -1428,7 +1466,7 @@
 
             const state = data?.estado_atual || data?.state;
             const stateLabel = state === 'COMPANION' ? 'Modo Companhia'
-                             : state === 'ROUTINE_PENDING' ? 'Tarefa pendente'
+                             : state === 'ROUTINE_PENDING' ? (data?.task ? `Pendente: ${escapeHTML(data.task)}` : 'Tarefa pendente')
                              : state === 'ROUTINE_COMPLETE' ? 'Celebrando!'
                              : '—';
 
@@ -1440,6 +1478,63 @@
             }
         });
     }
+
+    // ── Conquistas / Eventos em Tempo Real ──
+    function listenEvents() {
+        if (!currentUser) return;
+        if (unsubscribeEvents) unsubscribeEvents();
+
+        const q = query(
+            collection(db, "users", currentUser.uid, "eventos"),
+            orderBy("timestamp", "desc"),
+            limit(5)
+        );
+
+        unsubscribeEvents = onSnapshot(q, snap => {
+            const listEl = document.getElementById('conquistas-list');
+            if (!listEl) return;
+
+            if (snap.empty) {
+                listEl.innerHTML = `<div style="font-size:0.8rem;color:var(--text-muted);font-weight:600;padding:12px 0;">Aguardando primeiras conquistas pelo UTOME...</div>`;
+                return;
+            }
+
+            listEl.innerHTML = '';
+            snap.forEach(docSnap => {
+                const ev = docSnap.data();
+                const hora = ev.timestamp ? new Date(ev.timestamp).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }) : '';
+                const item = document.createElement('div');
+                item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1.5px solid var(--border);';
+                item.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="font-size:1.3rem;">🌟</span>
+                        <div>
+                            <div style="font-weight:800;font-size:0.88rem;color:var(--text-main);">${escapeHTML(ev.task_name || 'Rotina concluída')}</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);font-weight:600;">Confirmada com 3 toques no sensor do UTOME</div>
+                        </div>
+                    </div>
+                    <span class="badge badge-green" style="font-size:0.72rem;">✓ ${hora}</span>
+                `;
+                listEl.appendChild(item);
+            });
+        }, err => {
+            console.warn("Snapshot de eventos:", err.message);
+        });
+    }
+
+    window.cancelRoutine = async () => {
+        if (!profile?.device_id) return;
+        try {
+            await update(ref(rtdb, 'devices/' + profile.device_id), {
+                state: 'COMPANION',
+                task: null,
+                comando_pendente: null
+            });
+            toast('Modo Companhia restaurado no UTOME.');
+        } catch(e) {
+            toast('Erro ao cancelar rotina.');
+        }
+    };
 
     function updateDeviceBadge(online, state) {
         // Already handled inline
@@ -1515,9 +1610,23 @@
 
     window.sendTask = async (taskName) => {
         if (!profile?.device_id) { toast('Nenhum UTOME vinculado!'); return; }
-        const cmdRef = ref(rtdb, 'devices/' + profile.device_id + '/comando_pendente');
-        await set(cmdRef, { acao: 'EXECUTAR_TAREFA', nome_tarefa: taskName, timestamp: Date.now() });
-        toast('Tarefa enviada para o UTOME!');
+        try {
+            const devId = profile.device_id;
+            const now = Date.now();
+            await update(ref(rtdb, 'devices/' + devId), {
+                state: 'ROUTINE_PENDING',
+                task: taskName,
+                comando_pendente: {
+                    acao: 'EXECUTAR_TAREFA',
+                    nome_tarefa: taskName,
+                    timestamp: now
+                }
+            });
+            toast(`Tarefa "${taskName}" enviada para o UTOME!`);
+        } catch (err) {
+            console.error('Erro ao enviar tarefa:', err);
+            toast('Erro ao enviar tarefa ao UTOME.');
+        }
     };
 
     // ── Profile Save ──
@@ -1635,19 +1744,21 @@
         const newId = 'UTOME-' + suffix;
         generatedDeviceId = newId;
 
-        // Salvar no Firestore
+        // Salvar no Firestore e inicializar no RTDB
         try {
             const d = doc(db, "users", currentUser.uid);
             await updateDoc(d, { device_id: newId });
 
-            // Mostrar ID gerado
-            document.getElementById('generated-id-display').textContent = newId;
-            document.getElementById('device-id-generated').style.display = 'block';
-            document.getElementById('btn-gen-id').textContent = '↺ Gerar outro ID';
-            document.getElementById('d-id').value = newId;
+            // Inicializar o nó do dispositivo no RTDB já associado ao proprietário
+            await set(ref(rtdb, 'devices/' + newId), {
+                owner_uid: currentUser.uid,
+                online: false,
+                state: 'COMPANION',
+                configs: profile?.configuracoes || { modo_calmante: false, sons_celebracao: true }
+            });
 
             await loadProfile();
-            toast('ID gerado: ' + newId);
+            toast('ID gerado com sucesso: ' + newId);
         } catch (e) {
             console.error(e);
             toast('Erro ao gerar ID. Tente novamente.');
@@ -1658,6 +1769,25 @@
         const id = document.getElementById('generated-id-display')?.textContent;
         if (id && navigator.clipboard) {
             navigator.clipboard.writeText(id).then(() => toast('ID copiado!'));
+        }
+    };
+
+    window.unlinkDevice = async () => {
+        if (!currentUser || !profile?.device_id) return;
+        const currentDevId = profile.device_id;
+        if (!confirm(`Deseja realmente desvincular o dispositivo ${currentDevId} da sua conta?`)) return;
+
+        try {
+            const d = doc(db, "users", currentUser.uid);
+            await updateDoc(d, { device_id: null });
+            if (currentDevId) {
+                await update(ref(rtdb, 'devices/' + currentDevId), { online: false });
+            }
+            await loadProfile();
+            toast('Dispositivo desvinculado com sucesso.');
+        } catch (err) {
+            console.error(err);
+            toast('Erro ao desvincular dispositivo.');
         }
     };
 
