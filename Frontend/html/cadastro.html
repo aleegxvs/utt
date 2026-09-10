@@ -553,6 +553,18 @@
             const cpw = document.getElementById('confirm-password').value;
             const btn = document.getElementById('btn-signup');
 
+            if (pw.length < 8) {
+                document.getElementById('password').classList.add('error');
+                alert('A senha deve ter pelo menos 8 caracteres por segurança.');
+                return;
+            }
+
+            if (!/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)) {
+                document.getElementById('password').classList.add('error');
+                alert('A senha deve conter pelo menos uma letra e um número.');
+                return;
+            }
+
             if (pw !== cpw) {
                 document.getElementById('confirm-password').classList.add('error');
                 alert('As senhas não coincidem!');

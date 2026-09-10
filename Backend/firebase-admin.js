@@ -1,10 +1,12 @@
 require('dotenv').config();
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
+const { getAuth } = require('firebase-admin/auth');
 
 let serviceAccount;
 let db = null;
 let rtdb = null;
+let auth = null;
 
 try {
     if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
@@ -20,6 +22,7 @@ try {
     });
     
     db = getFirestore(app);
+    auth = getAuth(app);
     // rtdb = getDatabase(app); // Se precisarmos do RTDB no futuro
 
     console.log("Firebase Admin SDK inicializado com sucesso.");
@@ -27,4 +30,4 @@ try {
     console.error("Erro ao inicializar Firebase Admin SDK:", error);
 }
 
-module.exports = { db, rtdb };
+module.exports = { db, rtdb, auth };

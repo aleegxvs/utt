@@ -1103,6 +1103,17 @@
     // In-memory routine store {id: {nome, hora, tasks:[]}}
     let routineStore = {};
 
+    // ── Security Helper: Escape HTML (Anti-XSS) ──
+    function escapeHTML(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     // ── Auth Guard ──
     onAuthStateChanged(auth, async (user) => {
         if (!user) { window.location.href = 'login.html'; return; }
@@ -1231,8 +1242,8 @@
                     <div class="routine-header-left">
                         <div class="routine-dot">📋</div>
                         <div>
-                            <div class="routine-name">${r.nome}</div>
-                            <div class="routine-meta">${r.tasks.length} tarefa${r.tasks.length !== 1 ? 's' : ''}${r.hora ? ' · ' + r.hora : ''}</div>
+                            <div class="routine-name">${escapeHTML(r.nome)}</div>
+                            <div class="routine-meta">${r.tasks.length} tarefa${r.tasks.length !== 1 ? 's' : ''}${r.hora ? ' · ' + escapeHTML(r.hora) : ''}</div>
                         </div>
                     </div>
                     <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -1268,10 +1279,10 @@
             item.className = 'task-item';
             item.id = 'task-' + t.id;
             item.innerHTML = `
-                <div class="task-name">${t.nome}</div>
-                <div class="task-time">${t.horario || '—'}</div>
+                <div class="task-name">${escapeHTML(t.nome)}</div>
+                <div class="task-time">${escapeHTML(t.horario || '—')}</div>
                 <div class="task-actions">
-                    <button class="btn-icon" title="Enviar agora para o UTOME" onclick="sendTask('${t.nome}')">
+                    <button class="btn-icon" title="Enviar agora para o UTOME" data-task-name="${escapeHTML(t.nome)}" onclick="sendTask(this.dataset.taskName)">
                         <img src="https://img.icons8.com/fluency/14/sent.png" alt="Enviar">
                     </button>
                     <button class="btn-icon danger" title="Remover tarefa" onclick="deleteTask('${routineId}', '${t.id}')">
@@ -1302,8 +1313,8 @@
             row.innerHTML = `
                 <div style="font-size:1.2rem;">📋</div>
                 <div style="flex:1;">
-                    <div style="font-weight:800;font-size:0.88rem;">${r.nome}</div>
-                    <div style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">${r.tasks.length} tarefa${r.tasks.length !== 1 ? 's' : ''}${r.hora ? ' · ' + r.hora : ''}</div>
+                    <div style="font-weight:800;font-size:0.88rem;">${escapeHTML(r.nome)}</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">${r.tasks.length} tarefa${r.tasks.length !== 1 ? 's' : ''}${r.hora ? ' · ' + escapeHTML(r.hora) : ''}</div>
                 </div>
                 <button class="btn btn-outline" onclick="goTo('rotinas', null)" style="font-size:0.75rem;padding:5px 10px;">Ver</button>`;
             wrap.appendChild(row);
@@ -1530,13 +1541,16 @@
         if (!currentUser) return;
         
         try {
-            // A API de pareamento estará rodando na pasta db/ (ex: localhost:3000 ou URL de produção)
+            // Obter token de autenticação legítimo do Firebase
+            const idToken = await currentUser.getIdToken();
             const apiUrl = 'http://localhost:3000/api/pair/generate'; 
             
             const response = await fetch(apiUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uid: currentUser.uid })
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${idToken}`
+                }
             });
             
             const data = await response.json();

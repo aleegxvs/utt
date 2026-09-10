@@ -11,6 +11,44 @@ A formatação segue as diretrizes do [Keep a Changelog](https://keepachangelog.
 
 ---
 
+## [1.5.0] — 2026-09-10
+
+### Adicionado
+- **Hardening de Segurança (OWASP Top 10:2025 / AppSec)**:
+  - **Autenticação Obrigatória na API (`Backend/server.js`)**: Middleware `requireAuth` implementado para validar o ID Token do Firebase em `/api/pair/generate`, extraindo o `uid` exclusivamente do token criptográfico e erradicando falhas de BOLA/CWE-306.
+  - **Criptografia Segura (CSPRNG) & Rate Limiting (`Backend/server.js`)**: Geração de códigos de pareamento migrada de `Math.random()` para `crypto.randomBytes()`. Adicionada proteção contra força bruta no endpoint `/api/pair/link` (máximo 10 requisições/minuto) e `/api/pair/generate` (5 requisições/minuto).
+  - **CORS Restrito (`Backend/server.js`)**: Origens limitadas aos domínios oficiais e ambiente de desenvolvimento local.
+  - **Proteção Anti-XSS (`Frontend/html/dashboard.html`)**: Função sanitizadora `escapeHTML` implementada para neutralizar injeções de script persistentes (Stored XSS) nos nomes de rotinas e tarefas.
+  - **Controle de Acesso no Realtime Database (`database/database.rules.json`)**: Eliminado o acesso global irrestrito (`auth != null`), aplicando validação rigorosa de propriedade baseada no `owner_uid` de cada dispositivo.
+  - **Cabeçalhos de Segurança HTTP (`firebase.json`)**: Adicionados `Content-Security-Policy`, `X-Frame-Options: DENY` (anti-Clickjacking), `X-Content-Type-Options: nosniff`, `Strict-Transport-Security` e `Permissions-Policy` (bloqueio total de câmera/microfone/geolocalização em conformidade com LGPD/COPPA).
+  - **Política de Senhas Fortes (`Frontend/html/cadastro.html`)**: Validação client-side para exigir no mínimo 8 caracteres contendo letras e números.
+
+---
+
+## [1.4.0] — 2026-09-10
+
+### Alterado
+- **Reorganização Arquitetural de Pastas**:
+  - **`Backend/`**: Agora abriga oficialmente o servidor da UTOME API Node.js/Express (`server.js`, `firebase-admin.js`, `package.json`, etc.), eliminando a pasta `db/` que causava ambiguidade de nomenclatura.
+  - **`database/`**: Criado diretório exclusivo para as regras e índices de segurança do Firebase (`firestore.rules`, `firestore.indexes.json`, `database.rules.json`).
+  - **`firebase.json`**: Atualizados os apontamentos das regras para `database/` e adicionada blindagem no `hosting.ignore` para impedir publicação acidental de chaves de serviço e arquivos de ambiente.
+  - **`docs/prompts/`**: Criada subpasta para organizar prompts externos (`corretor.txt`, `segurity.txt`), deixando a raiz da documentação focada nas especificações canônicas do projeto.
+
+---
+
+## [1.3.1] — 2026-09-10
+
+### Corrigido
+- **Sintaxe HTML (`index.html`)**: Removida tag de fechamento `</section>` duplicada e órfã após a seção `#painel`.
+
+### Removido
+- **Limpeza de Arquivos Redundantes**:
+  - `Backend/firebase.txt` (snippet temporário duplicado).
+  - `db/.env.example` (arquivo auxiliar dispensável).
+  - `docs/termos_de_uso.md` e `docs/politica_de_privacidade.md` (rascunhos em Markdown substituídos oficialmente pelas páginas funcionais `Frontend/html/termos.html` e `Frontend/html/privacidade.html`).
+
+---
+
 ## [Unreleased] — Em Desenvolvimento Ativo
 
 ---
