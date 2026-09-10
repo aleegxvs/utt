@@ -524,7 +524,7 @@
     </div>
 
     <script type="module">
-        import { registerUser } from '../js/firebase/auth.js';
+        import { registerUser, loginWithGoogle } from '../js/firebase/auth.js';
 
         window.togglePassword = function(inputId, iconId) {
             const input = document.getElementById(inputId);
@@ -571,8 +571,18 @@
             }
         });
 
-        document.getElementById('btn-google').addEventListener('click', () => {
-            alert('Cadastro com Google em breve!');
+        document.getElementById('btn-google').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-google');
+            btn.disabled = true;
+            btn.textContent = 'Aguarde...';
+            try {
+                await loginWithGoogle();
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                alert('Erro ao cadastrar com Google: ' + error.message);
+                btn.disabled = false;
+                btn.innerHTML = `<img src="https://img.icons8.com/fluency/20/google-logo.png" alt="Google"> Cadastrar com Google`;
+            }
         });
     </script>
 </body>

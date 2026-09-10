@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "devices": {
+      "$device_id": {
+        ".read":  "auth != null",
+        ".write": "auth != null"
+      }
+    }
+  }
+}

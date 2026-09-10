@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Usuários só podem ler e escrever nos SEUS próprios documentos
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Subcoleção de rotinas
+      match /rotinas/{rotinaId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+
+        // Subcoleção de tarefas dentro de cada rotina
+        match /tarefas/{tarefaId} {
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+        }
+      }
+    }
+  }
+}

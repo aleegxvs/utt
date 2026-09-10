@@ -4,31 +4,37 @@ import {
     signInWithEmailAndPassword, 
     sendPasswordResetEmail, 
     signOut,
-    onAuthStateChanged
+    onAuthStateChanged,
+    GoogleAuthProvider,
+    signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-/**
- * Register a new user with Email and Password
- * @param {string} email 
- * @param {string} password 
- * @param {string} name 
- * @returns {Promise<UserCredential>}
- */
-export async function registerUser(email, password, name) {
-    try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+const googleProvider = new GoogleAuthProvider();
 
-        // Create default profile in Firestore
-        await setDoc(doc(db, "users", user.uid), {
+/**
+ * Creates or updates a user profile in Firestore.
+ * Used after both E-mail and Google sign-ins to ensure the document exists.
+ * @param {User} user - Firebase user object
+ * @param {string|null} customName - Optional override for display name
+ */
+async function ensureUserProfile(user, customName = null) {
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+
+    // Only create if not already existing (preserves data on re-login)
+    if (!docSnap.exists()) {
+        const name = customName || user.displayName || "Responsável";
+        const email = user.email || "";
+
+        await setDoc(docRef, {
             responsavel: {
                 nome: name,
                 email: email,
                 telefone: ""
             },
             crianca: {
-                nome: "Criança",
+                nome: "Meu Filho",
                 idade: null,
                 observacoes: ""
             },
@@ -41,55 +47,58 @@ export async function registerUser(email, password, name) {
             },
             createdAt: new Date().toISOString()
         });
-
-        return user;
-    } catch (error) {
-        throw error;
     }
 }
 
 /**
- * Login user
+ * Register a new user with Email and Password.
  * @param {string} email 
  * @param {string} password 
- * @returns {Promise<UserCredential>}
+ * @param {string} name 
+ */
+export async function registerUser(email, password, name) {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await ensureUserProfile(userCredential.user, name);
+    return userCredential.user;
+}
+
+/**
+ * Login user with Email and Password.
+ * @param {string} email 
+ * @param {string} password 
  */
 export async function loginUser(email, password) {
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        return userCredential.user;
-    } catch (error) {
-        throw error;
-    }
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
 }
 
 /**
- * Send password reset email
+ * Sign in or sign up with Google.
+ * Automatically creates a Firestore profile if it's the first access.
+ */
+export async function loginWithGoogle() {
+    const result = await signInWithPopup(auth, googleProvider);
+    await ensureUserProfile(result.user);
+    return result.user;
+}
+
+/**
+ * Send password reset email.
  * @param {string} email 
- * @returns {Promise<void>}
  */
 export async function resetPassword(email) {
-    try {
-        await sendPasswordResetEmail(auth, email);
-    } catch (error) {
-        throw error;
-    }
+    await sendPasswordResetEmail(auth, email);
 }
 
 /**
- * Logout user
- * @returns {Promise<void>}
+ * Logout user.
  */
 export async function logoutUser() {
-    try {
-        await signOut(auth);
-    } catch (error) {
-        throw error;
-    }
+    await signOut(auth);
 }
 
 /**
- * Listen to auth state changes
+ * Listen to auth state changes.
  * @param {function} callback 
  */
 export function listenAuthState(callback) {
