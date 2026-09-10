@@ -1,43 +1,39 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | UTOME</title>
-    <meta name="description" content="Painel do Responsável UTOME — gerencie rotinas, perfis e o dispositivo do seu filho.">
-
-    <!-- Google Fonts -->
+    <title>Painel | UTOME</title>
+    <meta name="description" content="Painel do responsável UTOME — gerencie rotinas, perfis e dispositivos.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="../assets/favicon.png">
-
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --primary:       #F57C00;
-            --primary-dark:  #D06900;
-            --primary-light: #FFF3E0;
-            --secondary:     #E6CDAA;
-            --dark:          #4A1F14;
-            --dark-shadow:   #361509;
-            --text:          #4A1F14;
-            --text-light:    #8B6B63;
-            --border:        #EAEAEA;
-            --border-shadow: #DEDEDE;
-            --bg:            #FFFDF9;
-            --white:         #FFFFFF;
-            --green:         #58CC02;
-            --green-dark:    #3E9400;
-            --font:          'Nunito', system-ui, sans-serif;
-            --sidebar-width: 260px;
-            --radius-xl:     24px;
-            --radius-lg:     18px;
-            --radius-md:     14px;
+            --primary:        #F57C00;
+            --primary-dark:   #D06900;
+            --primary-light:  #FFF3E0;
+            --dark:           #4A1F14;
+            --dark-shadow:    #361509;
+            --text:           #1A1A2E;
+            --text-muted:     #6B7280;
+            --border:         #E5E7EB;
+            --bg:             #F9FAFB;
+            --white:          #FFFFFF;
+            --green:          #22C55E;
+            --green-bg:       #DCFCE7;
+            --red:            #EF4444;
+            --red-bg:         #FEE2E2;
+            --yellow:         #F59E0B;
+            --yellow-bg:      #FEF3C7;
+            --font:           'Nunito', system-ui, sans-serif;
+            --sidebar-w:      240px;
+            --r-lg:           16px;
+            --r-md:           12px;
+            --r-sm:           8px;
         }
 
         body {
@@ -49,133 +45,128 @@
             overflow-x: hidden;
         }
 
-        /* =============================================
-           SIDEBAR
-        ============================================= */
+        /* ─── SIDEBAR ─── */
         .sidebar {
-            width: var(--sidebar-width);
-            background: var(--dark);
+            width: var(--sidebar-w);
+            background: var(--white);
+            border-right: 1.5px solid var(--border);
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             height: 100vh;
             z-index: 100;
-            transition: transform 0.3s ease;
         }
 
-        .sidebar-header {
-            padding: 28px 24px 20px;
-            border-bottom: 1.5px solid rgba(255,255,255,0.08);
+        .sidebar-brand {
+            padding: 24px 20px 16px;
+            border-bottom: 1.5px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .sidebar-logo img {
-            height: 44px;
-            width: auto;
-            filter: brightness(0) invert(1);
+        .brand-logo {
+            width: 36px; height: 36px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .brand-logo img { width: 22px; filter: brightness(0) invert(1); }
+
+        .brand-name {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--dark);
+            letter-spacing: -0.5px;
         }
 
         .sidebar-nav {
             flex: 1;
-            padding: 20px 16px;
-            overflow-y: auto;
+            padding: 16px 12px;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 2px;
+            overflow-y: auto;
         }
 
-        .nav-label {
-            font-size: 0.7rem;
-            font-weight: 900;
+        .nav-section-label {
+            font-size: 0.68rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: rgba(255,255,255,0.35);
-            padding: 12px 12px 6px;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            padding: 10px 8px 4px;
         }
 
-        .nav-item {
+        .nav-link {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: var(--radius-md);
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: var(--r-sm);
             cursor: pointer;
-            text-decoration: none;
-            color: rgba(255,255,255,0.65);
-            font-weight: 700;
-            font-size: 0.95rem;
-            transition: all 0.2s;
             border: none;
             background: none;
             width: 100%;
             text-align: left;
+            font-family: var(--font);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: all 0.15s;
+            text-decoration: none;
         }
 
-        .nav-item:hover {
-            background: rgba(255,255,255,0.07);
-            color: #fff;
+        .nav-link:hover {
+            background: var(--bg);
+            color: var(--text);
         }
 
-        .nav-item.active {
-            background: var(--primary);
-            color: #fff;
-            box-shadow: 0 4px 0 var(--primary-dark);
+        .nav-link.active {
+            background: var(--primary-light);
+            color: var(--primary-dark);
         }
 
-        .nav-item img { flex-shrink: 0; opacity: 0.85; filter: brightness(0) invert(1); }
-        .nav-item.active img { opacity: 1; }
+        .nav-link img { width: 18px; height: 18px; opacity: 0.6; }
+        .nav-link.active img { opacity: 1; filter: sepia(1) saturate(4) hue-rotate(-10deg) brightness(0.8); }
 
-        .sidebar-footer {
+        .sidebar-user {
             padding: 16px;
-            border-top: 1.5px solid rgba(255,255,255,0.08);
-        }
-
-        .user-pill {
+            border-top: 1.5px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: var(--radius-md);
+            gap: 10px;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
-        .user-pill:hover { background: rgba(255,255,255,0.07); }
-
-        .user-avatar {
-            width: 38px;
-            height: 38px;
+        .user-av {
+            width: 36px; height: 36px;
             border-radius: 50%;
             background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 1rem;
             color: #fff;
+            font-weight: 900;
+            font-size: 0.95rem;
+            display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
-            border: 2px solid var(--primary-dark);
         }
 
-        .user-info { flex: 1; overflow: hidden; }
-        .user-name { font-size: 0.85rem; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-role { font-size: 0.75rem; color: rgba(255,255,255,0.4); font-weight: 600; }
+        .user-name  { font-size: 0.85rem; font-weight: 800; color: var(--text); }
+        .user-role  { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); }
 
-        /* =============================================
-           MAIN CONTENT
-        ============================================= */
+        /* ─── MAIN ─── */
         .main {
-            margin-left: var(--sidebar-width);
+            margin-left: var(--sidebar-w);
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
 
+        /* ─── TOPBAR ─── */
         .topbar {
             background: var(--white);
-            border-bottom: 2px solid var(--border);
+            border-bottom: 1.5px solid var(--border);
             padding: 16px 32px;
             display: flex;
             align-items: center;
@@ -185,1087 +176,1295 @@
             z-index: 50;
         }
 
-        .topbar-title h1 {
-            font-size: 1.25rem;
+        .topbar-left h1 {
+            font-size: 1.1rem;
             font-weight: 900;
             color: var(--text);
         }
 
-        .topbar-title p {
-            font-size: 0.8rem;
-            color: var(--text-light);
+        .topbar-left p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
             font-weight: 600;
+            margin-top: 1px;
         }
 
-        .topbar-actions { display: flex; align-items: center; gap: 12px; }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: var(--radius-md);
-            font-family: var(--font);
-            font-weight: 800;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: 2px solid transparent;
-            text-decoration: none;
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-
-        .btn:active { transform: translateY(3px); box-shadow: none !important; }
-
-        .btn-primary {
-            background: var(--primary);
-            color: #fff;
-            border-color: var(--primary-dark);
-            box-shadow: 0 4px 0 var(--primary-dark);
-        }
-
-        .btn-primary:hover { background: #E56F00; }
-
-        .btn-ghost {
-            background: var(--white);
-            color: var(--text);
-            border-color: var(--border);
-            box-shadow: 0 4px 0 var(--border-shadow);
-        }
-
-        .btn-ghost:hover { background: var(--bg); }
-
-        .btn-danger {
-            background: #EF5350;
-            color: #fff;
-            border-color: #C62828;
-            box-shadow: 0 4px 0 #C62828;
-        }
-
-        .page-content {
-            padding: 32px;
-            flex: 1;
-        }
-
-        /* =============================================
-           CARDS / GRID UTILITÁRIOS
-        ============================================= */
-        .card {
-            background: var(--white);
-            border: 2.5px solid var(--border);
-            border-radius: var(--radius-xl);
-            padding: 28px;
-            box-shadow: 0 6px 0 var(--border-shadow);
-        }
-
-        .card-title {
-            font-size: 1rem;
-            font-weight: 900;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-
-        .card-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            font-weight: 600;
-            margin-bottom: 24px;
-        }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-
-        /* Stat cards */
-        .stat-card {
-            background: var(--white);
-            border: 2.5px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 20px 24px;
-            box-shadow: 0 5px 0 var(--border-shadow);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .stat-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .stat-icon--orange { background: #FFF3E0; border: 2px solid #FFD9A8; }
-        .stat-icon--green  { background: #E8F5E9; border: 2px solid #A5D6A7; }
-        .stat-icon--brown  { background: #EFEBE9; border: 2px solid #D7CCC8; }
-
-        .stat-info { flex: 1; }
-        .stat-value { font-size: 1.6rem; font-weight: 900; color: var(--text); line-height: 1; }
-        .stat-label { font-size: 0.8rem; font-weight: 700; color: var(--text-light); margin-top: 2px; }
-
-        /* Device status badge */
-        .badge-online  { background: #E8F5E9; color: #2E7D32; border: 1.5px solid #A5D6A7; }
-        .badge-offline { background: #FFEBEE; color: #C62828; border: 1.5px solid #FFCDD2; }
-        .badge-mode    { background: var(--primary-light); color: var(--primary-dark); border: 1.5px solid #FFD9A8; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
 
         .badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 4px 12px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 800;
         }
 
-        .badge-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-        }
+        .badge-gray    { background: var(--bg); color: var(--text-muted); border: 1.5px solid var(--border); }
+        .badge-green   { background: var(--green-bg); color: #15803D; border: 1.5px solid #BBF7D0; }
+        .badge-red     { background: var(--red-bg); color: #B91C1C; border: 1.5px solid #FECACA; }
+        .badge-orange  { background: var(--primary-light); color: var(--primary-dark); border: 1.5px solid #FFD9A8; }
 
-        .badge-dot--green  { background: #4CAF50; }
-        .badge-dot--red    { background: #EF5350; }
-        .badge-dot--orange { background: var(--primary); }
+        .dot { width: 7px; height: 7px; border-radius: 50%; }
+        .dot-green  { background: var(--green); }
+        .dot-red    { background: var(--red); }
+        .dot-gray   { background: var(--text-muted); }
+        .dot-orange { background: var(--primary); }
 
-        /* =============================================
-           PÁGINA: ROTINAS
-        ============================================= */
+        /* ─── CONTENT ─── */
+        .content { padding: 28px 32px; flex: 1; }
+
         .page { display: none; }
         .page.active { display: block; }
 
-        .page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        /* ─── WELCOME HEADER ─── */
+        .welcome-header {
             margin-bottom: 28px;
         }
 
-        .page-header h2 { font-size: 1.5rem; font-weight: 900; }
-        .page-header p  { font-size: 0.9rem; color: var(--text-light); font-weight: 600; margin-top: 2px; }
+        .welcome-header h2 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text);
+        }
 
-        /* Rotinas list */
-        .routine-list { display: flex; flex-direction: column; gap: 16px; }
+        .welcome-header p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 4px;
+        }
 
+        /* ─── CARDS ─── */
+        .card {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 900;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .card-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* ─── DEVICE CARD (overview) ─── */
+        .device-overview {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .device-overview-card {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .device-face {
+            width: 80px; height: 68px;
+            background: #111;
+            border-radius: 12px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 8px;
+            flex-shrink: 0;
+            border: 2px solid #222;
+        }
+
+        .face-eyes { display: flex; gap: 8px; }
+
+        .face-eye {
+            width: 11px; height: 11px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: blink 5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 88%, 100% { transform: scaleY(1); }
+            93%            { transform: scaleY(0.08); }
+        }
+
+        .face-mouth {
+            width: 22px; height: 9px;
+            border: 2px solid var(--primary);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .device-info-main { flex: 1; }
+        .device-info-main h3 { font-size: 1rem; font-weight: 900; color: var(--text); }
+        .device-id-tag {
+            display: inline-block;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            font-family: monospace;
+            margin: 4px 0 10px;
+        }
+
+        /* ─── MINI STAT ROW ─── */
+        .stat-row { display: flex; gap: 16px; margin-bottom: 28px; }
+
+        .stat-mini {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 18px 20px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .stat-mini-icon {
+            width: 42px; height: 42px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .si-orange { background: var(--primary-light); border: 1.5px solid #FFD9A8; }
+        .si-green  { background: var(--green-bg);     border: 1.5px solid #BBF7D0; }
+        .si-gray   { background: var(--bg);           border: 1.5px solid var(--border); }
+
+        .stat-mini-val  { font-size: 1.5rem; font-weight: 900; color: var(--text); line-height: 1; }
+        .stat-mini-lbl  { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); margin-top: 2px; }
+
+        /* ─── ROUTINES ─── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-header h3 { font-size: 0.95rem; font-weight: 900; color: var(--text); }
+
+        /* ─── BTNs ─── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 16px;
+            border-radius: var(--r-sm);
+            font-family: var(--font);
+            font-weight: 800;
+            font-size: 0.82rem;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+
+        .btn:active { transform: translateY(1px); opacity: 0.85; }
+
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: var(--white); color: var(--text); border: 1.5px solid var(--border); }
+        .btn-outline:hover { background: var(--bg); }
+        .btn-danger-soft { background: var(--red-bg); color: var(--red); }
+
+        /* ─── EMPTY STATE ─── */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 24px;
+            text-align: center;
+            gap: 12px;
+        }
+
+        .empty-icon {
+            width: 64px; height: 64px;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 4px;
+        }
+
+        .empty-title { font-size: 0.95rem; font-weight: 900; color: var(--text); }
+        .empty-sub   { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); max-width: 280px; }
+
+        /* ─── ROUTINE CARD ─── */
         .routine-card {
             background: var(--white);
-            border: 2.5px solid var(--border);
-            border-radius: var(--radius-lg);
-            box-shadow: 0 5px 0 var(--border-shadow);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-lg);
             overflow: hidden;
+            margin-bottom: 12px;
         }
 
         .routine-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 18px 24px;
+            padding: 16px 20px;
             cursor: pointer;
             user-select: none;
-            transition: background 0.2s;
+            transition: background 0.15s;
         }
 
         .routine-header:hover { background: var(--bg); }
 
-        .routine-header-left { display: flex; align-items: center; gap: 14px; }
+        .routine-header-left { display: flex; align-items: center; gap: 12px; }
 
-        .routine-icon-wrap {
-            width: 44px;
-            height: 44px;
+        .routine-dot {
+            width: 36px; height: 36px;
             background: var(--primary-light);
-            border: 2px solid #FFD9A8;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
         }
 
-        .routine-name { font-size: 1rem; font-weight: 900; }
-        .routine-meta { font-size: 0.8rem; color: var(--text-light); font-weight: 700; }
+        .routine-name { font-size: 0.9rem; font-weight: 900; color: var(--text); }
+        .routine-meta { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); }
 
-        .routine-chevron {
-            transition: transform 0.3s;
-            color: var(--text-light);
-        }
+        .chevron { transition: transform 0.25s; color: var(--text-muted); }
+        .routine-card.open .chevron { transform: rotate(180deg); }
 
-        .routine-card.open .routine-chevron { transform: rotate(180deg); }
-
-        .routine-tasks {
+        .routine-body {
             display: none;
-            padding: 0 24px 20px;
             border-top: 1.5px solid var(--border);
+            padding: 12px 16px 16px;
         }
 
-        .routine-card.open .routine-tasks { display: block; }
+        .routine-card.open .routine-body { display: block; }
 
-        .task-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
-
+        /* ─── TASK ITEM ─── */
         .task-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-sm);
+            margin-bottom: 8px;
             background: var(--bg);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-md);
-            transition: border-color 0.2s;
+            transition: border-color 0.15s;
         }
 
         .task-item:hover { border-color: var(--primary); }
 
-        .task-drag {
-            color: var(--text-light);
-            cursor: grab;
-            opacity: 0.5;
-        }
+        .task-name { flex: 1; font-size: 0.85rem; font-weight: 800; color: var(--text); }
+        .task-time { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
 
-        .task-name { flex: 1; font-size: 0.9rem; font-weight: 800; }
-        .task-time { font-size: 0.8rem; color: var(--text-light); font-weight: 700; }
-
-        .task-actions { display: flex; gap: 6px; }
+        .task-actions { display: flex; gap: 4px; }
 
         .btn-icon {
-            width: 32px;
-            height: 32px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
+            width: 30px; height: 30px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
             background: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             cursor: pointer;
-            transition: border-color 0.2s, background 0.2s;
-            box-shadow: 0 2px 0 var(--border-shadow);
+            transition: all 0.15s;
         }
 
-        .btn-icon:hover { border-color: #EF5350; background: #FFEBEE; }
-        .btn-icon--send:hover { border-color: var(--green); background: #E8F5E9; }
+        .btn-icon:hover { border-color: var(--primary); background: var(--primary-light); }
+        .btn-icon.danger:hover { border-color: var(--red); background: var(--red-bg); }
 
         .add-task-btn {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 16px;
-            border: 2px dashed var(--border);
-            border-radius: var(--radius-md);
+            padding: 9px 12px;
+            border: 1.5px dashed var(--border);
+            border-radius: var(--r-sm);
             background: none;
             cursor: pointer;
             font-family: var(--font);
-            font-weight: 800;
-            font-size: 0.85rem;
-            color: var(--text-light);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-muted);
             width: 100%;
-            margin-top: 10px;
-            transition: all 0.2s;
+            transition: all 0.15s;
         }
 
         .add-task-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 
-        /* =============================================
-           MODAL
-        ============================================= */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(74, 31, 20, 0.5);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 200;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.25s;
-        }
-
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-
-        .modal {
-            background: var(--white);
-            border: 3px solid var(--border);
-            border-radius: var(--radius-xl);
-            padding: 32px;
-            width: 90%;
-            max-width: 460px;
-            box-shadow: 0 10px 0 var(--border-shadow);
-            transform: translateY(16px);
-            transition: transform 0.25s;
-        }
-
-        .modal-overlay.active .modal { transform: translateY(0); }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .modal-header h3 { font-size: 1.3rem; font-weight: 900; }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            color: var(--text-light);
-            cursor: pointer;
-            line-height: 1;
-            transition: color 0.2s;
-        }
-
-        .modal-close:hover { color: var(--text); }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
+        /* ─── FORM ─── */
+        .form-group { margin-bottom: 16px; }
 
         .form-group label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 800;
             color: var(--text);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 14px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-sm);
             font-family: var(--font);
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             font-weight: 600;
             color: var(--text);
-            background: var(--bg);
+            background: var(--white);
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.15s;
         }
 
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.1);
-            background: #fff;
-        }
+        .form-control:focus { border-color: var(--primary); }
+        .form-control::placeholder { color: #C1C9D2; }
+        .form-control:disabled { opacity: 0.55; cursor: not-allowed; background: var(--bg); }
 
-        .form-control::placeholder { color: #C5BAB5; }
+        textarea.form-control { resize: vertical; min-height: 80px; }
 
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .modal-actions .btn { flex: 1; justify-content: center; }
-
-        /* =============================================
-           PÁGINA: PERFIL
-        ============================================= */
-        .profile-avatar-section {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .profile-avatar {
-            width: 88px;
-            height: 88px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: #fff;
-            flex-shrink: 0;
-            border: 4px solid var(--primary-dark);
-            box-shadow: 0 6px 0 var(--primary-dark);
-        }
-
-        .profile-avatar-info h3 { font-size: 1.3rem; font-weight: 900; }
-        .profile-avatar-info p  { font-size: 0.9rem; color: var(--text-light); font-weight: 600; }
-
-        /* =============================================
-           PÁGINA: DISPOSITIVO
-        ============================================= */
-        .device-status-card {
-            background: var(--dark);
-            border: 3px solid var(--dark-shadow);
-            border-radius: var(--radius-xl);
-            padding: 28px;
-            box-shadow: 0 8px 0 var(--dark-shadow);
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            margin-bottom: 24px;
-            color: #fff;
-        }
-
-        .device-oled {
-            width: 100px;
-            height: 80px;
-            background: #0A0A0A;
-            border: 3px solid #333;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .device-eyes {
-            display: flex;
-            gap: 10px;
-        }
-
-        .device-eye {
-            width: 14px;
-            height: 14px;
-            background: var(--primary);
-            border-radius: 50%;
-            animation: blink 4s ease-in-out infinite;
-        }
-
-        @keyframes blink {
-            0%, 90%, 100% { transform: scaleY(1); }
-            95%            { transform: scaleY(0.1); }
-        }
-
-        .device-mouth {
-            width: 28px;
-            height: 12px;
-            border: 2.5px solid var(--primary);
-            border-top: none;
-            border-radius: 0 0 16px 16px;
-        }
-
-        .device-info { flex: 1; }
-        .device-name { font-size: 1.2rem; font-weight: 900; margin-bottom: 6px; }
-        .device-meta { font-size: 0.85rem; color: rgba(255,255,255,0.6); font-weight: 600; }
-
-        /* Toggle switch */
+        /* ─── TOGGLE ─── */
         .toggle-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 0;
+            padding: 14px 0;
             border-bottom: 1.5px solid var(--border);
         }
 
-        .toggle-row:last-child { border-bottom: none; }
+        .toggle-row:last-of-type { border-bottom: none; }
 
-        .toggle-label { font-size: 0.95rem; font-weight: 800; }
-        .toggle-desc  { font-size: 0.8rem; color: var(--text-light); font-weight: 600; margin-top: 2px; }
+        .toggle-lbl  { font-size: 0.88rem; font-weight: 800; color: var(--text); }
+        .toggle-desc { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
 
-        .toggle {
-            position: relative;
-            width: 50px;
-            height: 28px;
-            flex-shrink: 0;
-        }
-
+        .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
         .toggle input { opacity: 0; width: 0; height: 0; }
 
         .toggle-slider {
             position: absolute;
             inset: 0;
             background: var(--border);
-            border-radius: 20px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.3s;
-            border: 2px solid var(--border-shadow);
+            transition: background 0.25s;
         }
 
-        .toggle-slider:before {
+        .toggle-slider::before {
             content: '';
             position: absolute;
-            width: 20px;
-            height: 20px;
-            left: 2px;
-            top: 2px;
+            width: 18px; height: 18px;
+            left: 3px; top: 3px;
             background: #fff;
             border-radius: 50%;
-            transition: transform 0.3s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.25s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
-        .toggle input:checked + .toggle-slider { background: var(--primary); border-color: var(--primary-dark); }
-        .toggle input:checked + .toggle-slider:before { transform: translateX(22px); }
+        .toggle input:checked + .toggle-slider { background: var(--primary); }
+        .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
 
-        /* =============================================
-           RESPONSIVE
-        ============================================= */
-        @media (max-width: 900px) {
+        /* ─── GRID ─── */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        /* ─── MODAL ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 28px;
+            width: 90%;
+            max-width: 440px;
+            transform: translateY(12px) scale(0.98);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .modal { transform: none; }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 { font-size: 1.05rem; font-weight: 900; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover { color: var(--text); }
+        .modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-footer .btn { flex: 1; justify-content: center; }
+
+        /* ─── NO DEVICE BANNER ─── */
+        .no-device-banner {
+            background: var(--primary-light);
+            border: 1.5px solid #FFD9A8;
+            border-radius: var(--r-lg);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .no-device-banner p { font-size: 0.88rem; font-weight: 700; color: var(--primary-dark); flex: 1; }
+
+        /* ─── TOAST ─── */
+        #toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 999;
+            background: var(--dark);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: var(--r-md);
+            font-size: 0.85rem;
+            font-weight: 800;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+
+        #toast.show { opacity: 1; transform: translateY(0); }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 820px) {
             .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
             .main { margin-left: 0; }
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .grid-2, .stat-row, .device-overview { grid-template-columns: 1fr; flex-direction: column; }
         }
     </style>
 </head>
-
 <body>
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <img src="../assets/logo.png" alt="UTOME Logo" onerror="this.src='https://img.icons8.com/color/48/robot-2.png'">
-            </div>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">
+            <img src="../assets/logo.png" alt="" onerror="this.src='https://img.icons8.com/fluency/22/robot-2.png'">
         </div>
+        <span class="brand-name">UTOME</span>
+    </div>
 
-        <nav class="sidebar-nav">
-            <span class="nav-label">Menu</span>
+    <nav class="sidebar-nav">
+        <span class="nav-section-label">Geral</span>
+        <button class="nav-link active" id="nav-inicio" onclick="goTo('inicio', this)">
+            <img src="https://img.icons8.com/fluency/20/home.png" alt="">
+            Início
+        </button>
+        <button class="nav-link" id="nav-rotinas" onclick="goTo('rotinas', this)">
+            <img src="https://img.icons8.com/fluency/20/calendar.png" alt="">
+            Rotinas
+        </button>
 
-            <button class="nav-item active" onclick="showPage('rotinas', this)" id="nav-rotinas">
-                <img src="https://img.icons8.com/fluency/22/calendar.png" alt="">
-                Rotinas
-            </button>
+        <span class="nav-section-label">Configurações</span>
+        <button class="nav-link" id="nav-perfil" onclick="goTo('perfil', this)">
+            <img src="https://img.icons8.com/fluency/20/user.png" alt="">
+            Perfil
+        </button>
+        <button class="nav-link" id="nav-dispositivo" onclick="goTo('dispositivo', this)">
+            <img src="https://img.icons8.com/fluency/20/robot-2.png" alt="">
+            Dispositivo
+        </button>
 
-            <button class="nav-item" onclick="showPage('perfil', this)" id="nav-perfil">
-                <img src="https://img.icons8.com/fluency/22/user.png" alt="">
-                Perfil
-            </button>
+        <span class="nav-section-label">Conta</span>
+        <button class="nav-link" onclick="logout()" style="color: #EF4444;">
+            <img src="https://img.icons8.com/fluency/20/exit.png" alt="" style="filter: sepia(1) saturate(10) hue-rotate(320deg);">
+            Sair
+        </button>
+    </nav>
 
-            <button class="nav-item" onclick="showPage('dispositivo', this)" id="nav-dispositivo">
-                <img src="https://img.icons8.com/fluency/22/robot-2.png" alt="">
-                Dispositivo
-            </button>
+    <div class="sidebar-user">
+        <div class="user-av" id="sidebar-av">?</div>
+        <div>
+            <div class="user-name" id="sidebar-name">Carregando...</div>
+            <div class="user-role">Responsável</div>
+        </div>
+    </div>
+</aside>
 
-            <span class="nav-label" style="margin-top: 16px;">Conta</span>
+<!-- ═══ MAIN ═══ -->
+<div class="main">
 
-            <button class="nav-item" onclick="logout()" style="border: none; background: none; font-family: inherit; font-size: inherit; text-align: left; width: 100%;"><img src="https://img.icons8.com/fluency/22/exit.png" alt="">Sair</button>
-        </nav>
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1 id="page-title">Início</h1>
+            <p id="page-sub">Bem-vindo ao painel UTOME</p>
+        </div>
+        <div class="topbar-right">
+            <span class="badge badge-gray" id="device-badge">
+                <span class="dot dot-gray"></span>
+                Nenhum UTOME vinculado
+            </span>
+        </div>
+    </header>
 
-        <div class="sidebar-footer">
-            <div class="user-pill">
-                <div class="user-avatar" id="sidebar-avatar">M</div>
-                <div class="user-info">
-                    <div class="user-name" id="sidebar-name">Maria Silva</div>
-                    <div class="user-role">Responsável</div>
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- ═══ PAGE: INÍCIO ═══ -->
+        <div class="page active" id="page-inicio">
+
+            <!-- Saudação -->
+            <div class="welcome-header">
+                <h2 id="greeting-text">Olá! 👋</h2>
+                <p>Aqui está um resumo de hoje.</p>
+            </div>
+
+            <!-- Banner: sem dispositivo vinculado -->
+            <div class="no-device-banner" id="no-device-banner" style="display:none;">
+                <img src="https://img.icons8.com/fluency/32/link--v1.png" alt="">
+                <p>Nenhum UTOME vinculado ainda. Vá em <strong>Dispositivo</strong> para vincular o seu robô.</p>
+                <button class="btn btn-primary" onclick="goTo('dispositivo', null)">Vincular</button>
+            </div>
+
+            <!-- UTOME Card (visível quando vinculado) -->
+            <div id="device-overview-section" style="display:none;">
+                <div class="device-overview">
+                    <div class="device-overview-card">
+                        <div class="device-face">
+                            <div class="face-eyes">
+                                <span class="face-eye"></span>
+                                <span class="face-eye" style="animation-delay:.12s"></span>
+                            </div>
+                            <div class="face-mouth"></div>
+                        </div>
+                        <div class="device-info-main">
+                            <h3 id="ov-device-name">—</h3>
+                            <div class="device-id-tag" id="ov-device-id">—</div>
+                            <span class="badge badge-gray" id="ov-status-badge">
+                                <span class="dot dot-gray"></span>
+                                Status desconhecido
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="device-overview-card" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                        <div>
+                            <div style="font-size:0.78rem;font-weight:800;color:var(--text-muted);margin-bottom:4px;">ESTADO ATUAL</div>
+                            <span class="badge badge-gray" id="ov-mode-badge"><span class="dot dot-gray"></span> —</span>
+                        </div>
+                        <div>
+                            <div style="font-size:0.78rem;font-weight:800;color:var(--text-muted);margin-bottom:4px;">ÚLTIMA VEZ VISTO</div>
+                            <span style="font-size:0.82rem;font-weight:700;color:var(--text);" id="ov-last-seen">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats: mostrar só se houver rotinas -->
+            <div class="stat-row" id="stat-row" style="display:none;">
+                <div class="stat-mini">
+                    <div class="stat-mini-icon si-orange">
+                        <img src="https://img.icons8.com/fluency/22/calendar.png" alt="">
+                    </div>
+                    <div>
+                        <div class="stat-mini-val" id="stat-total-routines">0</div>
+                        <div class="stat-mini-lbl">Rotinas criadas</div>
+                    </div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-icon si-green">
+                        <img src="https://img.icons8.com/fluency/22/checked--v1.png" alt="">
+                    </div>
+                    <div>
+                        <div class="stat-mini-val" id="stat-total-tasks">0</div>
+                        <div class="stat-mini-lbl">Tarefas no total</div>
+                    </div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-icon si-gray">
+                        <img src="https://img.icons8.com/fluency/22/child-safe-zone.png" alt="">
+                    </div>
+                    <div>
+                        <div class="stat-mini-val" id="stat-child-name">—</div>
+                        <div class="stat-mini-lbl">Criança</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rotinas resumo -->
+            <div class="card" id="rotinas-resumo-card">
+                <div class="card-title">Rotinas de hoje</div>
+                <div class="card-sub">Atividades configuradas para o UTOME</div>
+                <div id="rotinas-resumo-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <img src="https://img.icons8.com/fluency/28/calendar.png" alt="">
+                        </div>
+                        <div class="empty-title">Nenhuma rotina ainda</div>
+                        <div class="empty-sub">Vá até "Rotinas" para criar a primeira rotina do seu filho.</div>
+                        <button class="btn btn-primary" onclick="goTo('rotinas', null)" style="margin-top:8px;">Criar rotina</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </aside>
 
-    <!-- ===== MAIN ===== -->
-    <div class="main">
-        <!-- Topbar -->
-        <header class="topbar">
-            <div class="topbar-title">
-                <h1 id="topbar-title">Rotinas</h1>
-                <p id="topbar-subtitle">Crie e gerencie as rotinas do seu filho</p>
-            </div>
-            <div class="topbar-actions">
-                <span class="badge badge-online">
-                    <span class="badge-dot badge-dot--green"></span>
-                    UTOME Conectado
-                </span>
+        <!-- ═══ PAGE: ROTINAS ═══ -->
+        <div class="page" id="page-rotinas">
+            <div class="section-header">
+                <div>
+                    <h3 style="font-size:1.1rem;">Rotinas</h3>
+                    <p style="font-size:0.78rem;color:var(--text-muted);font-weight:600;margin-top:2px;">Crie e envie rotinas para o UTOME</p>
+                </div>
                 <button class="btn btn-primary" onclick="openModal('modal-rotina')">
-                    <img src="https://img.icons8.com/fluency/18/plus.png" alt="" style="filter: brightness(0) invert(1);">
+                    <img src="https://img.icons8.com/fluency/16/plus.png" alt="" style="filter:brightness(0) invert(1);">
                     Nova Rotina
                 </button>
             </div>
-        </header>
 
-        <!-- Page Content -->
-        <div class="page-content">
-
-            <!-- ===== PAGE: ROTINAS ===== -->
-            <div class="page active" id="page-rotinas">
-
-                <!-- Stats -->
-                <div class="grid-3" style="margin-bottom: 28px;">
-                    <div class="stat-card">
-                        <div class="stat-icon stat-icon--orange">
+            <div id="routine-list">
+                <div class="card">
+                    <div class="empty-state">
+                        <div class="empty-icon">
                             <img src="https://img.icons8.com/fluency/28/calendar.png" alt="">
                         </div>
-                        <div class="stat-info">
-                            <div class="stat-value" id="stat-rotinas">2</div>
-                            <div class="stat-label">Rotinas ativas</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon stat-icon--green">
-                            <img src="https://img.icons8.com/fluency/28/checked--v1.png" alt="">
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-value">5</div>
-                            <div class="stat-label">Tarefas hoje</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon stat-icon--brown">
-                            <img src="https://img.icons8.com/fluency/28/robot-2.png" alt="">
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-value">3</div>
-                            <div class="stat-label">Concluídas hoje</div>
-                        </div>
+                        <div class="empty-title">Nenhuma rotina criada</div>
+                        <div class="empty-sub">Crie uma rotina para organizar o dia do seu filho com o UTOME.</div>
                     </div>
                 </div>
-
-                <!-- Routine list -->
-                <div class="routine-list" id="routine-list">
-                    <!-- Template de rotina preenchida -->
-                    <div class="routine-card open" id="routine-manha">
-                        <div class="routine-header" onclick="toggleRoutine('routine-manha')">
-                            <div class="routine-header-left">
-                                <div class="routine-icon-wrap">
-                                    <img src="https://img.icons8.com/fluency/24/sun--v1.png" alt="">
-                                </div>
-                                <div>
-                                    <div class="routine-name">Rotina da Manhã</div>
-                                    <div class="routine-meta">3 tarefas</div>
-                                </div>
-                            </div>
-                            <svg class="routine-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </div>
-                        <div class="routine-tasks">
-                            <div class="task-list">
-                                <div class="task-item">
-                                    <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
-                                    <div class="task-name">Escovar os dentes</div>
-                                    <div class="task-time">07:00</div>
-                                    <div class="task-actions">
-                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)">
-                                            <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
-                                        </button>
-                                        <button class="btn-icon" title="Remover">
-                                            <img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir">
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="task-item">
-                                    <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
-                                    <div class="task-name">Tomar café da manhã</div>
-                                    <div class="task-time">07:30</div>
-                                    <div class="task-actions">
-                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)">
-                                            <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
-                                        </button>
-                                        <button class="btn-icon" title="Remover">
-                                            <img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir">
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="task-item">
-                                    <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
-                                    <div class="task-name">Colocar a mochila</div>
-                                    <div class="task-time">08:00</div>
-                                    <div class="task-actions">
-                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)">
-                                            <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
-                                        </button>
-                                        <button class="btn-icon" title="Remover">
-                                            <img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir">
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="add-task-btn" onclick="openModal('modal-tarefa', 'routine-manha')">
-                                <img src="https://img.icons8.com/fluency/16/plus.png" alt="">
-                                Adicionar tarefa
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="routine-card" id="routine-tarde">
-                        <div class="routine-header" onclick="toggleRoutine('routine-tarde')">
-                            <div class="routine-header-left">
-                                <div class="routine-icon-wrap">
-                                    <img src="https://img.icons8.com/fluency/24/partly-cloudy-day--v1.png" alt="">
-                                </div>
-                                <div>
-                                    <div class="routine-name">Rotina da Tarde</div>
-                                    <div class="routine-meta">2 tarefas</div>
-                                </div>
-                            </div>
-                            <svg class="routine-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </div>
-                        <div class="routine-tasks">
-                            <div class="task-list">
-                                <div class="task-item">
-                                    <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
-                                    <div class="task-name">Lição de casa</div>
-                                    <div class="task-time">14:00</div>
-                                    <div class="task-actions">
-                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)">
-                                            <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
-                                        </button>
-                                        <button class="btn-icon" title="Remover">
-                                            <img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir">
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="task-item">
-                                    <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
-                                    <div class="task-name">Beber água</div>
-                                    <div class="task-time">15:00</div>
-                                    <div class="task-actions">
-                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)">
-                                            <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
-                                        </button>
-                                        <button class="btn-icon" title="Remover">
-                                            <img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir">
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="add-task-btn" onclick="openModal('modal-tarefa', 'routine-tarde')">
-                                <img src="https://img.icons8.com/fluency/16/plus.png" alt="">
-                                Adicionar tarefa
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== PAGE: PERFIL ===== -->
-            <div class="page" id="page-perfil">
-                <div class="grid-2">
-                    <!-- Responsável -->
-                    <div class="card">
-                        <div class="card-title">Perfil do Responsável</div>
-                        <div class="card-subtitle">Suas informações de conta</div>
-                        <div class="profile-avatar-section">
-                            <div class="profile-avatar" id="profile-avatar-resp">M</div>
-                            <div class="profile-avatar-info">
-                                <h3 id="profile-name-resp">Maria Silva</h3>
-                                <p id="profile-email-resp">maria@email.com</p>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Nome completo</label>
-                            <input type="text" class="form-control" id="input-nome-resp" value="Maria Silva">
-                        </div>
-                        <div class="form-group">
-                            <label>E-mail</label>
-                            <input type="email" class="form-control" id="input-email-resp" value="maria@email.com" disabled style="opacity: 0.6; cursor: not-allowed;">
-                        </div>
-                        <div class="form-group">
-                            <label>Telefone</label>
-                            <input type="tel" class="form-control" id="input-tel-resp" placeholder="(00) 00000-0000">
-                        </div>
-                        <button class="btn btn-primary" onclick="saveProfile('resp')" style="width:100%; justify-content: center;">Salvar Alterações</button>
-                    </div>
-
-                    <!-- Criança -->
-                    <div class="card">
-                        <div class="card-title">Perfil da Criança</div>
-                        <div class="card-subtitle">Dados do seu filho</div>
-                        <div class="profile-avatar-section">
-                            <div class="profile-avatar" id="profile-avatar-child" style="background: var(--dark); border-color: var(--dark-shadow); box-shadow: 0 6px 0 var(--dark-shadow);">L</div>
-                            <div class="profile-avatar-info">
-                                <h3 id="profile-name-child">Lucas Silva</h3>
-                                <p>Perfil da criança</p>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Nome da criança</label>
-                            <input type="text" class="form-control" id="input-nome-child" value="Lucas Silva">
-                        </div>
-                        <div class="form-group">
-                            <label>Idade</label>
-                            <input type="number" class="form-control" id="input-idade-child" placeholder="Ex: 8" min="1" max="18">
-                        </div>
-                        <div class="form-group">
-                            <label>Observações / Preferências</label>
-                            <textarea class="form-control" id="input-obs-child" rows="3" placeholder="Ex: Prefere interações curtas, reage bem a sons suaves..."></textarea>
-                        </div>
-                        <button class="btn btn-primary" onclick="saveProfile('child')" style="width:100%; justify-content: center;">Salvar Alterações</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== PAGE: DISPOSITIVO ===== -->
-            <div class="page" id="page-dispositivo">
-                <!-- Status card -->
-                <div class="device-status-card">
-                    <div class="device-oled">
-                        <div class="device-eyes">
-                            <span class="device-eye"></span>
-                            <span class="device-eye" style="animation-delay: 0.1s"></span>
-                        </div>
-                        <div class="device-mouth"></div>
-                    </div>
-                    <div class="device-info">
-                        <div class="device-name" id="device-display-name">UTOME do Lucas</div>
-                        <div class="device-meta" style="margin-bottom: 12px;">
-                            ID: <code id="device-display-id" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 6px; font-size: 0.8rem;">UTM-2024-XXXX</code>
-                        </div>
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <span class="badge badge-online"><span class="badge-dot badge-dot--green"></span> Conectado</span>
-                            <span class="badge badge-mode"><span class="badge-dot badge-dot--orange"></span> Modo Companhia</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <!-- Configurações do dispositivo -->
-                    <div class="card">
-                        <div class="card-title">Configurações do UTOME</div>
-                        <div class="card-subtitle">Personalize o comportamento do robô</div>
-
-                        <div class="form-group">
-                            <label>Nome do UTOME</label>
-                            <input type="text" class="form-control" id="input-device-name" value="UTOME do Lucas" placeholder="Ex: UTOME do João">
-                        </div>
-                        <div class="form-group">
-                            <label>ID do Dispositivo</label>
-                            <input type="text" class="form-control" id="input-device-id" placeholder="Ex: UTM-2024-ABCD">
-                        </div>
-
-                        <div class="toggle-row">
-                            <div>
-                                <div class="toggle-label">Modo Calmante</div>
-                                <div class="toggle-desc">Reduz estímulos e usa animações lentas quando ativado</div>
-                            </div>
-                            <label class="toggle">
-                                <input type="checkbox" id="toggle-calmante">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-
-                        <div class="toggle-row">
-                            <div>
-                                <div class="toggle-label">Sons de Celebração</div>
-                                <div class="toggle-desc">Ativa um beep suave ao concluir uma tarefa</div>
-                            </div>
-                            <label class="toggle">
-                                <input type="checkbox" id="toggle-sons" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-
-                        <div class="toggle-row">
-                            <div>
-                                <div class="toggle-label">Modo Offline</div>
-                                <div class="toggle-desc">Somente leitura — o UTOME opera sem Wi-Fi</div>
-                            </div>
-                            <label class="toggle">
-                                <input type="checkbox" id="toggle-offline" disabled>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-
-                        <button class="btn btn-primary" onclick="saveDevice()" style="width:100%; justify-content: center; margin-top: 24px;">Salvar Configurações</button>
-                    </div>
-
-                    <!-- Vincular novo dispositivo -->
-                    <div class="card" style="display: flex; flex-direction: column;">
-                        <div class="card-title">Vincular Dispositivo</div>
-                        <div class="card-subtitle">Conecte um novo UTOME à sua conta</div>
-                        <div style="flex:1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; padding: 24px 0;">
-                            <div style="width: 80px; height: 80px; background: var(--primary-light); border: 2.5px solid #FFD9A8; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <img src="https://img.icons8.com/fluency/40/link--v1.png" alt="">
-                            </div>
-                            <div>
-                                <p style="font-weight: 800; color: var(--text); font-size: 0.95rem; margin-bottom: 6px;">Novo dispositivo?</p>
-                                <p style="font-size: 0.85rem;">Digite o ID impresso na parte de baixo do seu UTOME para vinculá-lo à sua conta.</p>
-                            </div>
-                            <div class="form-group" style="width: 100%; margin-bottom: 0;">
-                                <input type="text" class="form-control" id="input-new-device-id" placeholder="Ex: UTM-2024-ABCD" style="text-align: center; font-size: 1rem; font-weight: 900; letter-spacing: 1px;">
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" onclick="linkDevice()" style="width:100%; justify-content: center;">Vincular UTOME</button>
-                    </div>
-                </div>
-            </div>
-
-        </div><!-- /page-content -->
-    </div><!-- /main -->
-
-    <!-- ===== MODAL: Nova Rotina ===== -->
-    <div class="modal-overlay" id="modal-rotina">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Nova Rotina</h3>
-                <button class="modal-close" onclick="closeModal('modal-rotina')">&times;</button>
-            </div>
-            <div class="form-group">
-                <label>Nome da Rotina</label>
-                <input type="text" class="form-control" id="new-routine-name" placeholder="Ex: Rotina da Noite">
-            </div>
-            <div class="form-group">
-                <label>Horário de início</label>
-                <input type="time" class="form-control" id="new-routine-time">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-ghost" onclick="closeModal('modal-rotina')">Cancelar</button>
-                <button class="btn btn-primary" onclick="createRoutine()">Criar Rotina</button>
             </div>
         </div>
-    </div>
 
-    <!-- ===== MODAL: Nova Tarefa ===== -->
-    <div class="modal-overlay" id="modal-tarefa">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Nova Tarefa</h3>
-                <button class="modal-close" onclick="closeModal('modal-tarefa')">&times;</button>
-            </div>
-            <div class="form-group">
-                <label>Nome da Tarefa</label>
-                <input type="text" class="form-control" id="new-task-name" placeholder="Ex: Beber água">
-            </div>
-            <div class="form-group">
-                <label>Horário</label>
-                <input type="time" class="form-control" id="new-task-time">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-ghost" onclick="closeModal('modal-tarefa')">Cancelar</button>
-                <button class="btn btn-primary" onclick="createTask()">Adicionar Tarefa</button>
+        <!-- ═══ PAGE: PERFIL ═══ -->
+        <div class="page" id="page-perfil">
+            <div class="grid-2">
+                <!-- Responsável -->
+                <div class="card">
+                    <div class="card-title">Responsável</div>
+                    <div class="card-sub">Seus dados de conta</div>
+
+                    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;">
+                        <div class="user-av" id="p-av-resp" style="width:56px;height:56px;font-size:1.3rem;border-radius:50%;">?</div>
+                        <div>
+                            <div style="font-weight:900;font-size:1rem;" id="p-name-resp">—</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted);font-weight:600;" id="p-email-resp">—</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" class="form-control" id="input-resp-nome" placeholder="Seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" class="form-control" id="input-resp-email" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone</label>
+                        <input type="tel" class="form-control" id="input-resp-tel" placeholder="(00) 00000-0000">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="saveProfile('resp')">
+                        Salvar
+                    </button>
+                </div>
+
+                <!-- Criança -->
+                <div class="card">
+                    <div class="card-title">Criança</div>
+                    <div class="card-sub">Dados do seu filho</div>
+
+                    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;">
+                        <div class="user-av" id="p-av-child" style="width:56px;height:56px;font-size:1.3rem;border-radius:50%;background:var(--dark);">?</div>
+                        <div>
+                            <div style="font-weight:900;font-size:1rem;" id="p-name-child">—</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted);font-weight:600;">Perfil da criança</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" class="form-control" id="input-child-nome" placeholder="Nome da criança">
+                    </div>
+                    <div class="form-group">
+                        <label>Idade</label>
+                        <input type="number" class="form-control" id="input-child-idade" placeholder="Ex: 8" min="1" max="18">
+                    </div>
+                    <div class="form-group">
+                        <label>Observações</label>
+                        <textarea class="form-control" id="input-child-obs" placeholder="Ex: Prefere sons suaves, reage bem a animações..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="saveProfile('child')">
+                        Salvar
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        let activeRoutineId = null;
+        <!-- ═══ PAGE: DISPOSITIVO ═══ -->
+        <div class="page" id="page-dispositivo">
+            <div class="grid-2">
+                <!-- Config do dispositivo -->
+                <div class="card">
+                    <div class="card-title">Configurações do UTOME</div>
+                    <div class="card-sub">Personalize o comportamento do robô</div>
 
-        // ---- Navegação de páginas ----
-        const pages = {
-            rotinas:     { title: 'Rotinas',     subtitle: 'Crie e gerencie as rotinas do seu filho' },
-            perfil:      { title: 'Perfil',      subtitle: 'Gerencie os dados do responsável e da criança' },
-            dispositivo: { title: 'Dispositivo', subtitle: 'Configure e vincule o seu UTOME' },
-        };
+                    <div class="form-group">
+                        <label>Nome do UTOME</label>
+                        <input type="text" class="form-control" id="d-nome" placeholder="Ex: UTOME do João">
+                    </div>
+                    <div class="form-group">
+                        <label>ID do dispositivo</label>
+                        <input type="text" class="form-control" id="d-id" placeholder="Ex: UTOME-7F3A92" style="font-family:monospace;">
+                    </div>
 
-        function showPage(id, btn) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('page-' + id).classList.add('active');
-            if (btn) btn.classList.add('active');
-            document.getElementById('topbar-title').textContent    = pages[id].title;
-            document.getElementById('topbar-subtitle').textContent = pages[id].subtitle;
+                    <div class="toggle-row">
+                        <div>
+                            <div class="toggle-lbl">Modo Calmante</div>
+                            <div class="toggle-desc">Reduz estímulos, animações lentas e suaves</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="t-calmante">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
 
-            // Botão da topbar
-            const topbarBtn = document.querySelector('.topbar-actions .btn-primary');
-            topbarBtn.style.display = id === 'rotinas' ? '' : 'none';
-        }
+                    <div class="toggle-row">
+                        <div>
+                            <div class="toggle-lbl">Sons de Celebração</div>
+                            <div class="toggle-desc">Beep suave ao concluir uma tarefa</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="t-sons" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
 
-        // ---- Abrir/fechar rotinas ----
-        function toggleRoutine(id) {
-            document.getElementById(id).classList.toggle('open');
-        }
+                    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px;" onclick="saveDevice()">
+                        Salvar configurações
+                    </button>
+                </div>
 
-        // ---- Modais ----
-        function openModal(id, routineId) {
-            document.getElementById(id).classList.add('active');
-            if (routineId) activeRoutineId = routineId;
-        }
+                <!-- Vincular -->
+                <div class="card" style="display:flex;flex-direction:column;">
+                    <div class="card-title">Vincular UTOME</div>
+                    <div class="card-sub">Conecte um dispositivo à sua conta</div>
 
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        // Fechar modal clicando fora
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) overlay.classList.remove('active');
-            });
-        });
-
-        // ---- Criar rotina ----
-        function createRoutine() {
-            const name = document.getElementById('new-routine-name').value.trim();
-            const time = document.getElementById('new-routine-time').value;
-            if (!name) return;
-
-            const id = 'routine-' + Date.now();
-            const card = document.createElement('div');
-            card.className = 'routine-card open';
-            card.id = id;
-            card.innerHTML = `
-                <div class="routine-header" onclick="toggleRoutine('${id}')">
-                    <div class="routine-header-left">
-                        <div class="routine-icon-wrap">
-                            <img src="https://img.icons8.com/fluency/24/calendar.png" alt="">
+                    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:20px 0;">
+                        <div class="device-face" style="width:70px;height:58px;">
+                            <div class="face-eyes">
+                                <span class="face-eye"></span>
+                                <span class="face-eye" style="animation-delay:.12s"></span>
+                            </div>
+                            <div class="face-mouth"></div>
                         </div>
                         <div>
-                            <div class="routine-name">${name}</div>
-                            <div class="routine-meta">0 tarefas${time ? ' · ' + time : ''}</div>
+                            <p style="font-weight:800;font-size:0.88rem;">Novo dispositivo?</p>
+                            <p style="font-size:0.78rem;color:var(--text-muted);font-weight:600;margin-top:4px;">Digite o ID impresso na base do seu UTOME.</p>
+                        </div>
+                        <div class="form-group" style="width:100%;margin:0;">
+                            <input type="text" class="form-control" id="d-new-id" placeholder="UTOME-XXXXXX" style="text-align:center;font-family:monospace;font-size:1rem;font-weight:900;letter-spacing:1px;">
                         </div>
                     </div>
-                    <svg class="routine-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+
+                    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="linkDevice()">
+                        Vincular dispositivo
+                    </button>
                 </div>
-                <div class="routine-tasks">
-                    <div class="task-list" id="tasks-${id}"></div>
-                    <button class="add-task-btn" onclick="openModal('modal-tarefa', '${id}')">
-                        <img src="https://img.icons8.com/fluency/16/plus.png" alt="">
+            </div>
+        </div>
+
+    </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ═══ MODAIS ═══ -->
+
+<!-- Modal: Nova Rotina -->
+<div class="modal-overlay" id="modal-rotina">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Nova Rotina</h3>
+            <button class="modal-close" onclick="closeModal('modal-rotina')">&times;</button>
+        </div>
+        <div class="form-group">
+            <label>Nome da rotina</label>
+            <input type="text" class="form-control" id="m-routine-name" placeholder="Ex: Rotina da Manhã">
+        </div>
+        <div class="form-group">
+            <label>Horário de início</label>
+            <input type="time" class="form-control" id="m-routine-time">
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('modal-rotina')">Cancelar</button>
+            <button class="btn btn-primary" onclick="createRoutine()">Criar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Nova Tarefa -->
+<div class="modal-overlay" id="modal-tarefa">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Nova Tarefa</h3>
+            <button class="modal-close" onclick="closeModal('modal-tarefa')">&times;</button>
+        </div>
+        <div class="form-group">
+            <label>Nome da tarefa</label>
+            <input type="text" class="form-control" id="m-task-name" placeholder="Ex: Beber água">
+        </div>
+        <div class="form-group">
+            <label>Horário</label>
+            <input type="time" class="form-control" id="m-task-time">
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('modal-tarefa')">Cancelar</button>
+            <button class="btn btn-primary" onclick="createTask()">Adicionar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ═══ FIREBASE SCRIPT ═══ -->
+<script type="module">
+    import { auth, db, rtdb } from '../js/firebase/config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+    import { doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    import { ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+
+    // ── State ──
+    let currentUser = null;
+    let profile = null;
+    let activeRoutineId = null;
+    // In-memory routine store {id: {nome, hora, tasks:[]}}
+    let routineStore = {};
+
+    // ── Auth Guard ──
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) { window.location.href = 'login.html'; return; }
+        currentUser = user;
+        await loadProfile();
+        await loadRoutines();
+        renderInicio();
+    });
+
+    // ── Load Profile ──
+    async function loadProfile() {
+        const snap = await getDoc(doc(db, "users", currentUser.uid));
+        if (!snap.exists()) return;
+        profile = snap.data();
+        applyProfileToUI();
+    }
+
+    function applyProfileToUI() {
+        if (!profile) return;
+        const resp = profile.responsavel || {};
+        const child = profile.crianca || {};
+        const cfg = profile.configuracoes || {};
+
+        // Sidebar
+        const name = resp.nome || 'Responsável';
+        document.getElementById('sidebar-name').textContent = name;
+        document.getElementById('sidebar-av').textContent = name[0].toUpperCase();
+
+        // Greeting
+        document.getElementById('greeting-text').textContent = `Olá, ${name}! 👋`;
+
+        // Perfil page
+        document.getElementById('p-av-resp').textContent  = name[0].toUpperCase();
+        document.getElementById('p-name-resp').textContent = name;
+        document.getElementById('p-email-resp').textContent = resp.email || '';
+        document.getElementById('input-resp-nome').value = name;
+        document.getElementById('input-resp-email').value = resp.email || '';
+        document.getElementById('input-resp-tel').value = resp.telefone || '';
+
+        const cname = child.nome || '—';
+        document.getElementById('p-av-child').textContent = cname[0]?.toUpperCase() || '?';
+        document.getElementById('p-name-child').textContent = cname;
+        document.getElementById('input-child-nome').value = child.nome || '';
+        document.getElementById('input-child-idade').value = child.idade || '';
+        document.getElementById('input-child-obs').value = child.observacoes || '';
+
+        // Stats child name
+        document.getElementById('stat-child-name').textContent = child.nome || '—';
+
+        // Dispositivo
+        document.getElementById('d-nome').value = cfg.device_name || '';
+        document.getElementById('d-id').value = profile.device_id || '';
+        document.getElementById('t-calmante').checked = !!cfg.modo_calmante;
+        document.getElementById('t-sons').checked = cfg.sons_celebracao !== false;
+
+        // Device badge / overview
+        if (profile.device_id) {
+            document.getElementById('ov-device-name').textContent = cfg.device_name || profile.device_id;
+            document.getElementById('ov-device-id').textContent = profile.device_id;
+            document.getElementById('no-device-banner').style.display = 'none';
+            document.getElementById('device-overview-section').style.display = 'block';
+            listenRTDB(profile.device_id);
+        } else {
+            document.getElementById('no-device-banner').style.display = 'flex';
+            document.getElementById('device-overview-section').style.display = 'none';
+            updateDeviceBadge(false, null);
+        }
+    }
+
+    // ── Load Routines from Firestore ──
+    async function loadRoutines() {
+        if (!currentUser) return;
+        const snap = await getDocs(collection(db, "users", currentUser.uid, "rotinas"));
+        routineStore = {};
+        snap.forEach(d => {
+            routineStore[d.id] = { ...d.data(), id: d.id, tasks: [] };
+        });
+
+        // Load tasks for each routine
+        for (const rid of Object.keys(routineStore)) {
+            const tSnap = await getDocs(collection(db, "users", currentUser.uid, "rotinas", rid, "tarefas"));
+            tSnap.forEach(t => { routineStore[rid].tasks.push({ ...t.data(), id: t.id }); });
+        }
+
+        renderRoutines();
+    }
+
+    function renderRoutines() {
+        const list = document.getElementById('routine-list');
+        const ids = Object.keys(routineStore);
+
+        // Stats
+        let totalTasks = 0;
+        ids.forEach(id => { totalTasks += routineStore[id].tasks.length; });
+        document.getElementById('stat-total-routines').textContent = ids.length;
+        document.getElementById('stat-total-tasks').textContent = totalTasks;
+        if (ids.length > 0) {
+            document.getElementById('stat-row').style.display = 'flex';
+        }
+
+        if (ids.length === 0) {
+            list.innerHTML = `<div class="card"><div class="empty-state">
+                <div class="empty-icon"><img src="https://img.icons8.com/fluency/28/calendar.png" alt=""></div>
+                <div class="empty-title">Nenhuma rotina criada</div>
+                <div class="empty-sub">Crie uma rotina para organizar o dia do seu filho com o UTOME.</div>
+            </div></div>`;
+            renderInicioRotinas();
+            return;
+        }
+
+        list.innerHTML = '';
+        ids.forEach(id => {
+            const r = routineStore[id];
+            const card = document.createElement('div');
+            card.className = 'routine-card open';
+            card.id = 'rc-' + id;
+            card.innerHTML = `
+                <div class="routine-header" onclick="toggleRoutine('rc-${id}')">
+                    <div class="routine-header-left">
+                        <div class="routine-dot">📋</div>
+                        <div>
+                            <div class="routine-name">${r.nome}</div>
+                            <div class="routine-meta">${r.tasks.length} tarefa${r.tasks.length !== 1 ? 's' : ''}${r.hora ? ' · ' + r.hora : ''}</div>
+                        </div>
+                    </div>
+                    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="routine-body">
+                    <div id="tasks-${id}"></div>
+                    <button class="add-task-btn" onclick="openTaskModal('${id}')">
+                        <img src="https://img.icons8.com/fluency/14/plus.png" alt="">
                         Adicionar tarefa
                     </button>
+                    <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;">
+                        <button class="btn btn-danger-soft" onclick="deleteRoutine('${id}')">Excluir rotina</button>
+                    </div>
                 </div>`;
+            list.appendChild(card);
+            renderTasks(id);
+        });
 
-            document.getElementById('routine-list').appendChild(card);
-            document.getElementById('stat-rotinas').textContent = document.querySelectorAll('.routine-card').length;
-            document.getElementById('new-routine-name').value = '';
-            document.getElementById('new-routine-time').value = '';
-            closeModal('modal-rotina');
+        renderInicioRotinas();
+    }
+
+    function renderTasks(routineId) {
+        const container = document.getElementById('tasks-' + routineId);
+        if (!container) return;
+        const tasks = routineStore[routineId]?.tasks || [];
+        container.innerHTML = '';
+        if (tasks.length === 0) {
+            container.innerHTML = `<p style="font-size:0.8rem;color:var(--text-muted);font-weight:600;padding:8px 0;">Nenhuma tarefa. Adicione a primeira!</p>`;
+            return;
         }
-
-        // ---- Criar tarefa ----
-        function createTask() {
-            const name = document.getElementById('new-task-name').value.trim();
-            const time = document.getElementById('new-task-time').value;
-            if (!name || !activeRoutineId) return;
-
-            const taskListId = activeRoutineId.startsWith('routine-') 
-                ? 'tasks-' + activeRoutineId 
-                : null;
-
-            const taskItem = document.createElement('div');
-            taskItem.className = 'task-item';
-            taskItem.innerHTML = `
-                <svg class="task-drag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.5"/><circle cx="15" cy="7" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/></svg>
-                <div class="task-name">${name}</div>
-                <div class="task-time">${time || '--:--'}</div>
+        tasks.forEach(t => {
+            const item = document.createElement('div');
+            item.className = 'task-item';
+            item.id = 'task-' + t.id;
+            item.innerHTML = `
+                <div class="task-name">${t.nome}</div>
+                <div class="task-time">${t.horario || '—'}</div>
                 <div class="task-actions">
-                    <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)"><img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar"></button>
-                    <button class="btn-icon" title="Remover" onclick="this.closest('.task-item').remove()"><img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir"></button>
+                    <button class="btn-icon" title="Enviar agora para o UTOME" onclick="sendTask('${t.nome}')">
+                        <img src="https://img.icons8.com/fluency/14/sent.png" alt="Enviar">
+                    </button>
+                    <button class="btn-icon danger" title="Remover tarefa" onclick="deleteTask('${routineId}', '${t.id}')">
+                        <img src="https://img.icons8.com/fluency/14/trash.png" alt="Excluir">
+                    </button>
                 </div>`;
+            container.appendChild(item);
+        });
+    }
 
-            const container = taskListId 
-                ? document.getElementById(taskListId)
-                : document.querySelector(`#${activeRoutineId} .task-list`);
-
-            if (container) container.appendChild(taskItem);
-            document.getElementById('new-task-name').value = '';
-            document.getElementById('new-task-time').value = '';
-            closeModal('modal-tarefa');
+    function renderInicioRotinas() {
+        const wrap = document.getElementById('rotinas-resumo-list');
+        const ids = Object.keys(routineStore);
+        if (ids.length === 0) {
+            wrap.innerHTML = `<div class="empty-state">
+                <div class="empty-icon"><img src="https://img.icons8.com/fluency/28/calendar.png" alt=""></div>
+                <div class="empty-title">Nenhuma rotina ainda</div>
+                <div class="empty-sub">Vá até "Rotinas" para criar a primeira rotina do seu filho.</div>
+                <button class="btn btn-primary" onclick="goTo('rotinas', null)" style="margin-top:8px;">Criar rotina</button>
+            </div>`;
+            return;
         }
+        wrap.innerHTML = '';
+        ids.forEach(id => {
+            const r = routineStore[id];
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1.5px solid var(--border);';
+            row.innerHTML = `
+                <div style="font-size:1.2rem;">📋</div>
+                <div style="flex:1;">
+                    <div style="font-weight:800;font-size:0.88rem;">${r.nome}</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">${r.tasks.length} tarefa${r.tasks.length !== 1 ? 's' : ''}${r.hora ? ' · ' + r.hora : ''}</div>
+                </div>
+                <button class="btn btn-outline" onclick="goTo('rotinas', null)" style="font-size:0.75rem;padding:5px 10px;">Ver</button>`;
+            wrap.appendChild(row);
+        });
+    }
 
-        // ---- Salvar perfil ----
-        
+    function renderInicio() {
+        renderInicioRotinas();
+    }
 
-        // ---- Salvar dispositivo ----
-        
+    // ── RTDB Listener ──
+    function listenRTDB(deviceId) {
+        const r = ref(rtdb, 'devices/' + deviceId);
+        onValue(r, snap => {
+            const data = snap.val();
+            updateDeviceBadge(data?.online, data?.estado_atual || data?.state);
 
-        
+            if (data?.online) {
+                document.getElementById('ov-status-badge').className = 'badge badge-green';
+                document.getElementById('ov-status-badge').innerHTML = '<span class="dot dot-green"></span> Conectado';
+                document.getElementById('device-badge').className = 'badge badge-green';
+                document.getElementById('device-badge').innerHTML = '<span class="dot dot-green"></span> UTOME Conectado';
+            } else {
+                document.getElementById('ov-status-badge').className = 'badge badge-gray';
+                document.getElementById('ov-status-badge').innerHTML = '<span class="dot dot-gray"></span> Offline';
+                document.getElementById('device-badge').className = 'badge badge-gray';
+                document.getElementById('device-badge').innerHTML = '<span class="dot dot-gray"></span> UTOME Offline';
+            }
 
-        // ---- Toast ----
-        function showToast(msg) {
-            const t = document.createElement('div');
-            t.textContent = msg;
-            Object.assign(t.style, {
-                position: 'fixed', bottom: '32px', right: '32px', zIndex: 999,
-                background: '#4A1F14', color: '#fff',
-                padding: '14px 24px', borderRadius: '14px',
-                fontFamily: 'Nunito, sans-serif', fontWeight: 800, fontSize: '0.9rem',
-                boxShadow: '0 6px 0 #361509',
-                opacity: 0, transition: 'opacity 0.3s',
+            const state = data?.estado_atual || data?.state;
+            const stateLabel = state === 'COMPANION' ? 'Modo Companhia'
+                             : state === 'ROUTINE_PENDING' ? 'Tarefa pendente'
+                             : state === 'ROUTINE_COMPLETE' ? 'Celebrando!'
+                             : '—';
+
+            document.getElementById('ov-mode-badge').className = state === 'COMPANION' ? 'badge badge-green' : state === 'ROUTINE_PENDING' ? 'badge badge-orange' : 'badge badge-gray';
+            document.getElementById('ov-mode-badge').innerHTML = `<span class="dot ${state === 'COMPANION' ? 'dot-green' : state === 'ROUTINE_PENDING' ? 'dot-orange' : 'dot-gray'}"></span> ${stateLabel}`;
+
+            if (data?.last_seen) {
+                document.getElementById('ov-last-seen').textContent = new Date(data.last_seen).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+            }
+        });
+    }
+
+    function updateDeviceBadge(online, state) {
+        // Already handled inline
+    }
+
+    // ── Navigation ──
+    const pageConfig = {
+        inicio:      { title: 'Início',      sub: 'Bem-vindo ao painel UTOME' },
+        rotinas:     { title: 'Rotinas',     sub: 'Crie e gerencie as rotinas do seu filho' },
+        perfil:      { title: 'Perfil',      sub: 'Gerencie seus dados e os da criança' },
+        dispositivo: { title: 'Dispositivo', sub: 'Configure e vincule o UTOME' },
+    };
+
+    window.goTo = (id, btn) => {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+        document.getElementById('page-' + id).classList.add('active');
+        document.getElementById('nav-' + id)?.classList.add('active');
+        if (btn) btn.classList.add('active');
+        const cfg = pageConfig[id];
+        document.getElementById('page-title').textContent = cfg.title;
+        document.getElementById('page-sub').textContent = cfg.sub;
+    };
+
+    // ── Routines ──
+    window.toggleRoutine = id => document.getElementById(id)?.classList.toggle('open');
+
+    window.openTaskModal = id => {
+        activeRoutineId = id;
+        openModal('modal-tarefa');
+    };
+
+    window.createRoutine = async () => {
+        const nome = document.getElementById('m-routine-name').value.trim();
+        const hora = document.getElementById('m-routine-time').value;
+        if (!nome) return;
+        const ref2 = await addDoc(collection(db, "users", currentUser.uid, "rotinas"), { nome, hora, ativa: true });
+        routineStore[ref2.id] = { id: ref2.id, nome, hora, tasks: [] };
+        document.getElementById('m-routine-name').value = '';
+        document.getElementById('m-routine-time').value = '';
+        closeModal('modal-rotina');
+        renderRoutines();
+        toast('Rotina criada!');
+    };
+
+    window.createTask = async () => {
+        const nome = document.getElementById('m-task-name').value.trim();
+        const horario = document.getElementById('m-task-time').value;
+        if (!nome || !activeRoutineId) return;
+        const tRef = await addDoc(collection(db, "users", currentUser.uid, "rotinas", activeRoutineId, "tarefas"), { nome, horario, concluida: false });
+        routineStore[activeRoutineId].tasks.push({ id: tRef.id, nome, horario });
+        document.getElementById('m-task-name').value = '';
+        document.getElementById('m-task-time').value = '';
+        closeModal('modal-tarefa');
+        renderRoutines();
+        toast('Tarefa adicionada!');
+    };
+
+    window.deleteRoutine = async id => {
+        if (!confirm('Excluir esta rotina e todas as suas tarefas?')) return;
+        await deleteDoc(doc(db, "users", currentUser.uid, "rotinas", id));
+        delete routineStore[id];
+        renderRoutines();
+        toast('Rotina excluída.');
+    };
+
+    window.deleteTask = async (routineId, taskId) => {
+        await deleteDoc(doc(db, "users", currentUser.uid, "rotinas", routineId, "tarefas", taskId));
+        routineStore[routineId].tasks = routineStore[routineId].tasks.filter(t => t.id !== taskId);
+        renderTasks(routineId);
+        toast('Tarefa removida.');
+    };
+
+    window.sendTask = async (taskName) => {
+        if (!profile?.device_id) { toast('Nenhum UTOME vinculado!'); return; }
+        const cmdRef = ref(rtdb, 'devices/' + profile.device_id + '/comando_pendente');
+        await set(cmdRef, { acao: 'EXECUTAR_TAREFA', nome_tarefa: taskName, timestamp: Date.now() });
+        toast('Tarefa enviada para o UTOME!');
+    };
+
+    // ── Profile Save ──
+    window.saveProfile = async (type) => {
+        if (!currentUser) return;
+        const d = doc(db, "users", currentUser.uid);
+        try {
+            if (type === 'resp') {
+                const nome = document.getElementById('input-resp-nome').value.trim();
+                const tel  = document.getElementById('input-resp-tel').value.trim();
+                await updateDoc(d, { 'responsavel.nome': nome, 'responsavel.telefone': tel });
+                toast('Perfil do responsável salvo!');
+            } else {
+                const nome  = document.getElementById('input-child-nome').value.trim();
+                const idade = parseInt(document.getElementById('input-child-idade').value) || null;
+                const obs   = document.getElementById('input-child-obs').value.trim();
+                await updateDoc(d, { 'crianca.nome': nome, 'crianca.idade': idade, 'crianca.observacoes': obs });
+                toast('Perfil da criança salvo!');
+            }
+            await loadProfile();
+        } catch (e) { toast('Erro ao salvar.'); }
+    };
+
+    // ── Device Save ──
+    window.saveDevice = async () => {
+        if (!currentUser) return;
+        const d = doc(db, "users", currentUser.uid);
+        const nome = document.getElementById('d-nome').value.trim();
+        const calmante = document.getElementById('t-calmante').checked;
+        const sons = document.getElementById('t-sons').checked;
+        try {
+            await updateDoc(d, {
+                'configuracoes.device_name': nome,
+                'configuracoes.modo_calmante': calmante,
+                'configuracoes.sons_celebracao': sons
             });
-            document.body.appendChild(t);
-            requestAnimationFrame(() => t.style.opacity = 1);
-            setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 300); }, 2500);
-        }
-    </script>
-<script type="module" src="../js/firebase/dashboard.js"></script>
+            // Sync to RTDB
+            if (profile?.device_id) {
+                await set(ref(rtdb, 'devices/' + profile.device_id + '/configs'), { modo_calmante: calmante, sons });
+            }
+            await loadProfile();
+            toast('Configurações salvas!');
+        } catch (e) { toast('Erro ao salvar.'); }
+    };
+
+    window.linkDevice = async () => {
+        const id = document.getElementById('d-new-id').value.trim().toUpperCase();
+        if (!id) return;
+        const d = doc(db, "users", currentUser.uid);
+        try {
+            await updateDoc(d, { device_id: id });
+            document.getElementById('d-new-id').value = '';
+            await loadProfile();
+            toast('UTOME vinculado com sucesso!');
+        } catch (e) { toast('Erro ao vincular.'); }
+    };
+
+    // ── Logout ──
+    window.logout = async () => {
+        await signOut(auth);
+        window.location.href = 'login.html';
+    };
+
+    // ── Modal ──
+    window.openModal  = id => document.getElementById(id).classList.add('active');
+    window.closeModal = id => document.getElementById(id).classList.remove('active');
+
+    document.querySelectorAll('.modal-overlay').forEach(o => {
+        o.addEventListener('click', e => { if (e.target === o) o.classList.remove('active'); });
+    });
+
+    // ── Toast ──
+    window.toast = function(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2800);
+    };
+
+    // ── Expose showToast alias for dashboard.js compat ──
+    window.showToast = window.toast;
+</script>
 </body>
 </html>

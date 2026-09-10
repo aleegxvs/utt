@@ -111,6 +111,16 @@ A formatação segue as diretrizes do [Keep a Changelog](https://keepachangelog.
 - **Navegação atualizada**: Links do nav agora apontam para todas as seções reais da página com âncoras (`#problema`, `#como-funciona`, `#funcionalidades`, `#prototipo`).
 - **`<h1>` movido** do logo/brand para o título do Hero, corrigindo hierarquia semântica de SEO.
 
+## [1.1.0] — 2026-09-09
+
+### Alterado
+- **Dashboard Refeita do Zero** (`Frontend/html/dashboard.html`): 
+  - Layout reconstruído com visual clean, moderno e mais 3D (estilo referência), com sidebar lateral branca e card blocks estruturados.
+  - Informações falsas/placeholders foram completamente removidas; o painel agora inicia em estado "vazio" e amigável.
+  - Conectividade 100% via Firebase (Firestore e Realtime DB), com gestão real de perfil, criação dinâmica de Rotinas/Tarefas e sincronismo de Device.
+  - Lógica do `dashboard.js` foi consolidada num bloco unificado em módulo na própria página, simplificando as importações (e o arquivo antigo `dashboard.js` foi deletado).
+  - Atualização real do estado offline/online do Utome e sincronização fidedigna com os estados detalhados na Arquitetura (COMPANION, PENDING).
+
 ---
 
 ## [1.0.1] — 2026-09-08
