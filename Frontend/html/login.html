@@ -482,8 +482,11 @@
         </div>
     </div>
 
-    <script>
-        function togglePassword() {
+    <script type="module">
+        import { loginUser } from '../js/firebase/auth.js';
+
+        // O togglePassword precisa estar no escopo global para o onclick funcionar
+        window.togglePassword = function() {
             const input = document.getElementById('password');
             const icon = document.getElementById('eye-icon');
             if (input.type === 'password') {
@@ -495,14 +498,27 @@
             }
         }
 
-        document.getElementById('login-form').addEventListener('submit', (e) => {
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            // TODO: Firebase Auth – login com e-mail/senha
-            alert('Login em breve! Firebase será integrado na próxima etapa.');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.querySelector('#login-form button[type="submit"]');
+            
+            const originalText = btn.textContent;
+            btn.textContent = 'Entrando...';
+            btn.disabled = true;
+
+            try {
+                await loginUser(email, password);
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                alert('Erro ao fazer login: ' + error.message);
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
         });
 
         document.getElementById('btn-google').addEventListener('click', () => {
-            // TODO: Firebase Auth – Google Sign-In
             alert('Login com Google em breve!');
         });
     </script>

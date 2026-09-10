@@ -737,10 +737,7 @@
 
             <span class="nav-label" style="margin-top: 16px;">Conta</span>
 
-            <a href="../../index.html" class="nav-item">
-                <img src="https://img.icons8.com/fluency/22/exit.png" alt="">
-                Sair
-            </a>
+            <button class="nav-item" onclick="logout()" style="border: none; background: none; font-family: inherit; font-size: inherit; text-align: left; width: 100%;"><img src="https://img.icons8.com/fluency/22/exit.png" alt="">Sair</button>
         </nav>
 
         <div class="sidebar-footer">
@@ -836,7 +833,7 @@
                                     <div class="task-name">Escovar os dentes</div>
                                     <div class="task-time">07:00</div>
                                     <div class="task-actions">
-                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora">
+                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)">
                                             <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
                                         </button>
                                         <button class="btn-icon" title="Remover">
@@ -849,7 +846,7 @@
                                     <div class="task-name">Tomar café da manhã</div>
                                     <div class="task-time">07:30</div>
                                     <div class="task-actions">
-                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora">
+                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)">
                                             <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
                                         </button>
                                         <button class="btn-icon" title="Remover">
@@ -862,7 +859,7 @@
                                     <div class="task-name">Colocar a mochila</div>
                                     <div class="task-time">08:00</div>
                                     <div class="task-actions">
-                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora">
+                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)">
                                             <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
                                         </button>
                                         <button class="btn-icon" title="Remover">
@@ -900,7 +897,7 @@
                                     <div class="task-name">Lição de casa</div>
                                     <div class="task-time">14:00</div>
                                     <div class="task-actions">
-                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora">
+                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)">
                                             <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
                                         </button>
                                         <button class="btn-icon" title="Remover">
@@ -913,7 +910,7 @@
                                     <div class="task-name">Beber água</div>
                                     <div class="task-time">15:00</div>
                                     <div class="task-actions">
-                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora">
+                                        <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)">
                                             <img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar">
                                         </button>
                                         <button class="btn-icon" title="Remover">
@@ -1230,7 +1227,7 @@
                 <div class="task-name">${name}</div>
                 <div class="task-time">${time || '--:--'}</div>
                 <div class="task-actions">
-                    <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora"><img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar"></button>
+                    <button class="btn-icon btn-icon--send" title="Enviar para o UTOME agora" onclick="sendTaskToDevice(this.closest(\'.task-item\').querySelector(\'.task-name\').textContent)"><img src="https://img.icons8.com/fluency/16/sent.png" alt="Enviar"></button>
                     <button class="btn-icon" title="Remover" onclick="this.closest('.task-item').remove()"><img src="https://img.icons8.com/fluency/16/trash.png" alt="Excluir"></button>
                 </div>`;
 
@@ -1245,41 +1242,12 @@
         }
 
         // ---- Salvar perfil ----
-        function saveProfile(type) {
-            if (type === 'resp') {
-                const name = document.getElementById('input-nome-resp').value.trim();
-                if (!name) return;
-                document.getElementById('profile-name-resp').textContent = name;
-                document.getElementById('sidebar-name').textContent = name;
-                document.getElementById('sidebar-avatar').textContent = name[0].toUpperCase();
-                document.getElementById('profile-avatar-resp').textContent = name[0].toUpperCase();
-                showToast('Perfil do responsável salvo!');
-            } else {
-                const name = document.getElementById('input-nome-child').value.trim();
-                if (!name) return;
-                document.getElementById('profile-name-child').textContent = name;
-                document.getElementById('profile-avatar-child').textContent = name[0].toUpperCase();
-                showToast('Perfil da criança salvo!');
-            }
-        }
+        
 
         // ---- Salvar dispositivo ----
-        function saveDevice() {
-            const name = document.getElementById('input-device-name').value.trim();
-            const id   = document.getElementById('input-device-id').value.trim();
-            if (name) document.getElementById('device-display-name').textContent = name;
-            if (id)   document.getElementById('device-display-id').textContent   = id;
-            showToast('Configurações salvas!');
-        }
+        
 
-        function linkDevice() {
-            const id = document.getElementById('input-new-device-id').value.trim();
-            if (!id) return;
-            document.getElementById('input-device-id').value = id;
-            document.getElementById('device-display-id').textContent = id;
-            document.getElementById('input-new-device-id').value = '';
-            showToast('UTOME vinculado com sucesso!');
-        }
+        
 
         // ---- Toast ----
         function showToast(msg) {
@@ -1298,5 +1266,6 @@
             setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 300); }, 2500);
         }
     </script>
+<script type="module" src="../js/firebase/dashboard.js"></script>
 </body>
 </html>

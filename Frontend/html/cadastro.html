@@ -523,8 +523,10 @@
         </div>
     </div>
 
-    <script>
-        function togglePassword(inputId, iconId) {
+    <script type="module">
+        import { registerUser } from '../js/firebase/auth.js';
+
+        window.togglePassword = function(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
             if (input.type === 'password') {
@@ -536,26 +538,40 @@
             }
         }
 
-        function validateForm() {
+        window.validateForm = function() {
             const agreed = document.getElementById('agree-terms').checked;
             document.getElementById('btn-signup').disabled = !agreed;
         }
 
-        document.getElementById('signup-form').addEventListener('submit', (e) => {
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
             const pw = document.getElementById('password').value;
             const cpw = document.getElementById('confirm-password').value;
+            const btn = document.getElementById('btn-signup');
+
             if (pw !== cpw) {
                 document.getElementById('confirm-password').classList.add('error');
                 alert('As senhas não coincidem!');
                 return;
             }
-            // TODO: Firebase Auth – createUserWithEmailAndPassword
-            alert('Conta criada! Firebase será integrado na próxima etapa.');
+
+            const originalText = btn.textContent;
+            btn.textContent = 'Criando conta...';
+            btn.disabled = true;
+
+            try {
+                await registerUser(email, pw, name);
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                alert('Erro ao cadastrar: ' + error.message);
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
         });
 
         document.getElementById('btn-google').addEventListener('click', () => {
-            // TODO: Firebase Auth – Google Sign-In
             alert('Cadastro com Google em breve!');
         });
     </script>
