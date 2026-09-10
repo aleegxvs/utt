@@ -1,34 +1,30 @@
 require('dotenv').config();
-const admin = require('firebase-admin');
-
-// No ambiente de produção, essas credenciais vêm do arquivo .env
-// No ambiente local, você deve baixar o arquivo serviceAccountKey.json do Console do Firebase
+const { initializeApp, cert } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
 
 let serviceAccount;
+let db = null;
+let rtdb = null;
 
 try {
     if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
-        // Se estiver num servidor (Render/Railway), pode usar base64
         const buff = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64');
         serviceAccount = JSON.parse(buff.toString('ascii'));
     } else {
-        // Usa o arquivo local
         serviceAccount = require('./serviceAccountKey.json');
     }
 
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-        databaseURL: process.env.FIREBASE_DATABASE_URL || "https://uttomebr-default-rtdb.firebaseio.com" // Substitua se necessário
+    const app = initializeApp({
+        credential: cert(serviceAccount),
+        databaseURL: process.env.FIREBASE_DATABASE_URL || "https://uttomebr-default-rtdb.firebaseio.com"
     });
+    
+    db = getFirestore(app);
+    // rtdb = getDatabase(app); // Se precisarmos do RTDB no futuro
 
     console.log("Firebase Admin SDK inicializado com sucesso.");
 } catch (error) {
-    console.error("Erro ao inicializar Firebase Admin SDK:");
-    console.error("Certifique-se de que baixou o serviceAccountKey.json do Firebase Console e colocou na pasta db/.");
-    // Não encerra o processo imediatamente para permitir que a API inicie e mostre o erro nos endpoints
+    console.error("Erro ao inicializar Firebase Admin SDK:", error);
 }
 
-const db = admin.firestore ? admin.firestore() : null;
-const rtdb = admin.database ? admin.database() : null;
-
-module.exports = { admin, db, rtdb };
+module.exports = { db, rtdb };
