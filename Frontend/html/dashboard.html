@@ -63,23 +63,12 @@
             border-bottom: 1.5px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
         }
 
-        .brand-logo {
-            width: 36px; height: 36px;
-            background: var(--primary);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .brand-logo img { width: 22px; filter: brightness(0) invert(1); }
-
-        .brand-name {
-            font-size: 1.1rem;
-            font-weight: 900;
-            color: var(--dark);
-            letter-spacing: -0.5px;
+        .sidebar-brand img {
+            max-width: 140px;
+            height: auto;
         }
 
         .sidebar-nav {
@@ -144,13 +133,17 @@
         .user-av {
             width: 36px; height: 36px;
             border-radius: 50%;
-            background: var(--primary);
-            color: #fff;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            color: var(--text-muted);
             font-weight: 900;
             font-size: 0.95rem;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
+            overflow: hidden;
         }
+        
+        .user-av img { width: 100%; height: 100%; object-fit: cover; }
 
         .user-name  { font-size: 0.85rem; font-weight: 800; color: var(--text); }
         .user-role  { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); }
@@ -645,7 +638,30 @@
 
         .no-device-banner p { font-size: 0.88rem; font-weight: 700; color: var(--primary-dark); flex: 1; }
 
-        /* ─── TOAST ─── */
+        /* ─── AVATAR UPLOAD ─── */
+        .avatar-upload-wrapper {
+            position: relative;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        .avatar-upload-wrapper:hover::after {
+            content: '+ Foto';
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+            border-radius: 50%;
+        }
+        
+        .avatar-upload-wrapper input[type="file"] {
+            display: none;
+        }
         #toast {
             position: fixed;
             bottom: 28px;
@@ -678,10 +694,7 @@
 <!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar">
     <div class="sidebar-brand">
-        <div class="brand-logo">
-            <img src="../assets/logo.png" alt="" onerror="this.src='https://img.icons8.com/fluency/22/robot-2.png'">
-        </div>
-        <span class="brand-name">UTOME</span>
+        <img src="../assets/logo.png" alt="UTOME Logo">
     </div>
 
     <nav class="sidebar-nav">
@@ -874,7 +887,12 @@
                     <div class="card-sub">Seus dados de conta</div>
 
                     <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;">
-                        <div class="user-av" id="p-av-resp" style="width:56px;height:56px;font-size:1.3rem;border-radius:50%;">?</div>
+                        <label class="avatar-upload-wrapper" title="Alterar foto">
+                            <div class="user-av" id="p-av-resp" style="width:56px;height:56px;font-size:1.3rem;">
+                                <img src="https://img.icons8.com/fluency/48/user-male-circle.png" alt="">
+                            </div>
+                            <input type="file" accept="image/png, image/jpeg" onchange="uploadAvatar('resp', this)">
+                        </label>
                         <div>
                             <div style="font-weight:900;font-size:1rem;" id="p-name-resp">—</div>
                             <div style="font-size:0.78rem;color:var(--text-muted);font-weight:600;" id="p-email-resp">—</div>
@@ -904,7 +922,12 @@
                     <div class="card-sub">Dados do seu filho</div>
 
                     <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;">
-                        <div class="user-av" id="p-av-child" style="width:56px;height:56px;font-size:1.3rem;border-radius:50%;background:var(--dark);">?</div>
+                        <label class="avatar-upload-wrapper" title="Alterar foto">
+                            <div class="user-av" id="p-av-child" style="width:56px;height:56px;font-size:1.3rem;background:var(--primary-light);border-color:var(--primary-light);">
+                                <img src="https://img.icons8.com/fluency/48/child-safe-zone.png" alt="">
+                            </div>
+                            <input type="file" accept="image/png, image/jpeg" onchange="uploadAvatar('child', this)">
+                        </label>
                         <div>
                             <div style="font-weight:900;font-size:1rem;" id="p-name-child">—</div>
                             <div style="font-size:0.78rem;color:var(--text-muted);font-weight:600;">Perfil da criança</div>
@@ -1095,13 +1118,20 @@
         // Sidebar
         const name = resp.nome || 'Responsável';
         document.getElementById('sidebar-name').textContent = name;
-        document.getElementById('sidebar-av').textContent = name[0].toUpperCase();
+        
+        const avatarDefault = "https://img.icons8.com/fluency/48/user-male-circle.png";
+        const childDefault = "https://img.icons8.com/fluency/48/child-safe-zone.png";
+        
+        const respAv = resp.avatar || avatarDefault;
+        const childAv = child.avatar || childDefault;
+
+        document.getElementById('sidebar-av').innerHTML = `<img src="${respAv}" alt="">`;
 
         // Greeting
         document.getElementById('greeting-text').textContent = `Olá, ${name}! 👋`;
 
         // Perfil page
-        document.getElementById('p-av-resp').textContent  = name[0].toUpperCase();
+        document.getElementById('p-av-resp').innerHTML  = `<img src="${respAv}" alt="">`;
         document.getElementById('p-name-resp').textContent = name;
         document.getElementById('p-email-resp').textContent = resp.email || '';
         document.getElementById('input-resp-nome').value = name;
@@ -1109,7 +1139,7 @@
         document.getElementById('input-resp-tel').value = resp.telefone || '';
 
         const cname = child.nome || '—';
-        document.getElementById('p-av-child').textContent = cname[0]?.toUpperCase() || '?';
+        document.getElementById('p-av-child').innerHTML = `<img src="${childAv}" alt="">`;
         document.getElementById('p-name-child').textContent = cname;
         document.getElementById('input-child-nome').value = child.nome || '';
         document.getElementById('input-child-idade').value = child.idade || '';
@@ -1405,6 +1435,59 @@
             }
             await loadProfile();
         } catch (e) { toast('Erro ao salvar.'); }
+    };
+    
+    // ── Avatar Upload (Base64) ──
+    window.uploadAvatar = function(type, input) {
+        if (!input.files || !input.files[0] || !currentUser) return;
+        const file = input.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = async function() {
+                // Resize to max 150x150 to keep Base64 small
+                const canvas = document.createElement('canvas');
+                const MAX_SIZE = 150;
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > height) {
+                    if (width > MAX_SIZE) {
+                        height *= MAX_SIZE / width;
+                        width = MAX_SIZE;
+                    }
+                } else {
+                    if (height > MAX_SIZE) {
+                        width *= MAX_SIZE / height;
+                        height = MAX_SIZE;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.85); // Compress JPEG
+                
+                // Save to Firestore
+                const d = doc(db, "users", currentUser.uid);
+                try {
+                    if (type === 'resp') {
+                        await updateDoc(d, { 'responsavel.avatar': dataUrl });
+                        toast('Foto do responsável atualizada!');
+                    } else {
+                        await updateDoc(d, { 'crianca.avatar': dataUrl });
+                        toast('Foto da criança atualizada!');
+                    }
+                    await loadProfile();
+                } catch(err) {
+                    toast('Erro ao atualizar foto.');
+                }
+            }
+            img.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
     };
 
     // ── Device Save ──
