@@ -42,7 +42,7 @@ async function ensureUserProfile(user, customName = null) {
             configuracoes: {
                 device_name: "Meu UTOME",
                 modo_calmante: false,
-                sons_celebracao: true,
+                animacao_celebracao: true,
                 modo_offline: false
             },
             createdAt: new Date().toISOString()

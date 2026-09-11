@@ -14,7 +14,7 @@
           ".write": "auth != null && (data.parent().child('owner_uid').val() === auth.uid || !data.parent().child('owner_uid').exists())"
         },
 
-        // Sub-nó de configurações (Modo Calmante, Sons)
+        // Sub-nó de configurações (Modo Calmante, Celebração Visual)
         "configs": {
           ".read": "auth != null && (data.parent().child('owner_uid').val() === auth.uid || !data.parent().child('owner_uid').exists())",
           ".write": "auth != null && (data.parent().child('owner_uid').val() === auth.uid || !data.parent().child('owner_uid').exists())"

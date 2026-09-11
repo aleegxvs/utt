@@ -1014,7 +1014,7 @@
                     </div>
                     <div class="form-group">
                         <label>Observações</label>
-                        <textarea class="form-control" id="input-child-obs" placeholder="Ex: Prefere sons suaves, reage bem a animações..."></textarea>
+                        <textarea class="form-control" id="input-child-obs" placeholder="Ex: Sensível a luz forte, reage bem a expressões visuais calmas..."></textarea>
                     </div>
                     <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="saveProfile('child')">
                         Salvar
@@ -1053,11 +1053,11 @@
 
                     <div class="toggle-row">
                         <div>
-                            <div class="toggle-lbl">Sons de Celebração</div>
-                            <div class="toggle-desc">Beep suave ao concluir uma tarefa</div>
+                            <div class="toggle-lbl">Celebração Visual no OLED</div>
+                            <div class="toggle-desc">Animação com estrelas nos olhos ao concluir tarefa (100% silencioso, sem buzzer)</div>
                         </div>
                         <label class="toggle">
-                            <input type="checkbox" id="t-sons" checked>
+                            <input type="checkbox" id="t-animacao" checked>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
@@ -1277,7 +1277,7 @@
         document.getElementById('d-nome').value = cfg.device_name || '';
         document.getElementById('d-id').value = profile.device_id || '';
         document.getElementById('t-calmante').checked = !!cfg.modo_calmante;
-        document.getElementById('t-sons').checked = cfg.sons_celebracao !== false;
+        document.getElementById('t-animacao').checked = cfg.animacao_celebracao !== false;
 
         // Device badge / overview & Vincular section
         if (profile.device_id) {
@@ -1709,16 +1709,16 @@
         const d = doc(db, "users", currentUser.uid);
         const nome = document.getElementById('d-nome').value.trim();
         const calmante = document.getElementById('t-calmante').checked;
-        const sons = document.getElementById('t-sons').checked;
+        const animacao = document.getElementById('t-animacao').checked;
         try {
             await updateDoc(d, {
                 'configuracoes.device_name': nome,
                 'configuracoes.modo_calmante': calmante,
-                'configuracoes.sons_celebracao': sons
+                'configuracoes.animacao_celebracao': animacao
             });
             // Sync to RTDB
             if (profile?.device_id) {
-                await set(ref(rtdb, 'devices/' + profile.device_id + '/configs'), { modo_calmante: calmante, sons });
+                await set(ref(rtdb, 'devices/' + profile.device_id + '/configs'), { modo_calmante: calmante, animacao_celebracao: animacao });
             }
             await loadProfile();
             toast('Configurações salvas!');
@@ -1754,7 +1754,7 @@
                 owner_uid: currentUser.uid,
                 online: false,
                 state: 'COMPANION',
-                configs: profile?.configuracoes || { modo_calmante: false, sons_celebracao: true }
+                configs: profile?.configuracoes || { modo_calmante: false, animacao_celebracao: true }
             });
 
             await loadProfile();

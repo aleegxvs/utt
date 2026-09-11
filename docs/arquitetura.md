@@ -708,7 +708,7 @@ users/{uid}
   └── configuracoes/
         ├── device_name: "UTOME do João"
         ├── modo_calmante: false
-        └── sons_celebracao: true
+        └── animacao_celebracao: true  # 100% silencioso (sem buzzer, foco em baixo estímulo sensorial TEA)
 ```
 
 ### 20.3 Comportamento do ESP32 — estados de boot

@@ -134,7 +134,7 @@ app.post('/api/device/connect', rateLimiter({ windowMs: 60 * 1000, max: 20 }), a
 
         const now = Date.now();
         const firmwareVer = typeof firmware === 'string' ? firmware.slice(0, 20) : '1.0.0';
-        const userConfigs = owner.data.configuracoes || { modo_calmante: false, sons_celebracao: true };
+        const userConfigs = owner.data.configuracoes || { modo_calmante: false, animacao_celebracao: true };
 
         // Atualizar no Realtime Database (usado para telemetria em tempo real com o dashboard)
         if (rtdb) {
